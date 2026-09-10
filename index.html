@@ -1023,16 +1023,17 @@ svg.lucide {
 
 html>body{padding:0}</style>
 </head>
-<body><div id="gondola-3d">
+<body>
+<div id="gondola-3d">
   <div class="viz-row"><strong>吊船定位裝置 · 3D 概念</strong><span class="text-small">幾何演示，非受力驗證</span></div>
   <div class="viz-controls">
     <label class="form-label" for="g3-height-slider">目標高度 <output id="g3-height-target" for="g3-height-slider" class="tabular-nums">0</output> mm · 目前 <output id="g3-height-value" class="tabular-nums">0</output> mm<input id="g3-height-slider" class="form-range" type="range" min="-3000" max="3000" step="10" value="0" aria-describedby="g3-height-hint"></label>
-    <label class="form-label">目的高度 <select class="form-select" id="g3-height"><option value="3">上層（+3000 mm 假設）</option><option value="1.5">上／中層之間（+1500 mm）</option><option value="0" selected>中層（原工作高度 0 mm）</option><option value="-1.5">中／下層之間（−1500 mm）</option><option value="-3">下層（−3000 mm 假設）</option></select></label>
+    <label class="form-label">目的高度 <select class="form-select" id="g3-height"><option value="3">上層（+3000 mm 假設）</option><option value="2.2">上／中層間最大活動範圍（+2200 mm）</option><option value="0" selected>中層（原工作高度 0 mm）</option><option value="-0.8">中／下層間最大活動範圍（−800 mm）</option><option value="-3">下層（−3000 mm 假設）</option></select></label>
     <button class="btn" id="g3-height-play" type="button">播放升降避讓</button>
     <button class="btn" id="g3-skip" type="button" disabled>跳過動畫</button>
   </div>
   <div class="text-small" id="g3-height-hint">三層 · 層距暫用 3000 mm。拖動滑桿選目標，放開後慢速播放「收妥 → 升降 → 展開」，全程約 30 秒，可暫停／繼續。</div>
-  <div class="text-small">層間位置按相鄰工作高度的中點設定；可延伸範圍仍取決於人員、帆布、桿件、設備及吊纜間隙。跳過動畫會完成目前動作，保留間隙檢查。</div>
+  <div class="text-small">層間高度優先保留完整左右 800 mm 行程，再盡量增加前後行程。預設設備各 400 mm、帆布每邊 250 mm，一／兩人可前後移近 0–610 mm；尺寸改動後以滑桿實際範圍為準。跳過動畫保留間隙檢查。</div>
   <div class="text-small" id="g3-height-status" aria-live="polite">目前：原工作高度 · 0 mm</div>
   <div class="text-small" id="g3-forward-limit"></div>
   <div class="viz-controls">
@@ -1780,5 +1781,6 @@ html>body{padding:0}</style>
   })();
   </script>
 </div>
+
 </body>
 </html>

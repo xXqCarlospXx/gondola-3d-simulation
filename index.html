@@ -1049,6 +1049,7 @@ html>body{padding:0}</style>
   </div>
   <div class="text-small" id="g3-mech-status" aria-live="polite">展開扣接 · 可調整吊船位置</div>
   <div class="viz-row">
+    <button class="btn" id="g3-theme-toggle" type="button" aria-label="深色模式" aria-pressed="false">深色模式：關</button>
     <button class="btn" id="g3-distance-toggle" type="button" aria-pressed="false" aria-controls="g3-canvas g3-distance-summary g3-distance-hint g3-readout g3-clearance">尺寸顯示：關</button>
     <button class="btn" id="g3-settings-toggle" type="button" aria-expanded="true" aria-controls="g3-ac-setting g3-extent-setting">隱藏尺寸設定</button>
     <button class="btn" id="g3-play" type="button">播放一次橫移</button>
@@ -1073,6 +1074,21 @@ html>body{padding:0}</style>
   <div class="text-small">分支喉：延至左右牆角 → 沿側牆向外延伸 → 再轉入側牆（尺寸示意）。收放及一／兩人配置未驗證承載、抗風及升降補償。</div>
   <style>
     #gondola-3d { color:var(--foreground); --g3-boat-color:light-dark(#3489d5,#72b7ef); --g3-frame-color:light-dark(#df72ac,#f19ac7); --g3-cloth-color:light-dark(#ed8b20,#ffad4b); }
+    #gondola-3d[data-g3-theme] {
+      background:var(--background);
+      --background:light-dark(rgb(255 255 255),rgb(24 24 24));
+      --foreground:light-dark(rgb(26 28 31),rgb(255 255 255));
+      --primary:light-dark(rgb(51 156 255),rgb(131 195 255));
+      --primary-foreground:light-dark(rgb(255 255 255),rgb(13 13 13));
+      --secondary:light-dark(rgb(255 255 255),rgb(54 54 54));
+      --secondary-foreground:var(--foreground);
+      --muted:color-mix(in srgb,var(--foreground) 10%,transparent);
+      --muted-foreground:color-mix(in srgb,var(--foreground) 65%,var(--background));
+      --border:color-mix(in srgb,var(--foreground) 15%,transparent);
+      --input:color-mix(in srgb,var(--foreground) 20%,transparent);
+      --ring:var(--primary);
+      --destructive:light-dark(rgb(226 85 7),rgb(255 133 73));
+    }
     #gondola-3d #g3-stage { width:100%; position:relative; }
     #gondola-3d [hidden] { display:none !important; }
     #gondola-3d #g3-canvas { display:block; width:100%; touch-action:none; cursor:grab; }
@@ -1091,6 +1107,17 @@ html>body{padding:0}</style>
     const ac=root.querySelector('#g3-ac');
     const people=root.querySelector('#g3-people');
     const distanceToggle=root.querySelector('#g3-distance-toggle');
+    const themeToggle=root.querySelector('#g3-theme-toggle');
+    const systemTheme=window.matchMedia('(prefers-color-scheme: dark)');
+    let chosenTheme=null;
+    function applyTheme(dark){
+      const theme=dark?'dark':'light';
+      root.dataset.g3Theme=theme;root.style.colorScheme=theme;
+      // Change only this simulation; exported documents also update the page background.
+      if(document.documentElement.hasAttribute('data-visualize-standalone'))document.documentElement.style.setProperty('color-scheme',theme,'important');
+      themeToggle.textContent=dark?'深色模式：開':'深色模式：關';
+      themeToggle.setAttribute('aria-pressed',String(dark));
+    }
     let showDistances=false;
     const heightSelect=root.querySelector('#g3-height'),heightPlay=root.querySelector('#g3-height-play');
     const heightSlider=root.querySelector('#g3-height-slider'),heightValue=root.querySelector('#g3-height-value');
@@ -1752,6 +1779,13 @@ html>body{padding:0}</style>
       for(const id of ['g3-distance-summary','g3-distance-hint','g3-readout','g3-clearance'])root.querySelector('#'+id).hidden=!showDistances;
       render();
     });
+    themeToggle.addEventListener('click',()=>{
+      chosenTheme=root.dataset.g3Theme!=='dark';
+      applyTheme(chosenTheme);colors();render();
+    });
+    systemTheme.addEventListener('change',e=>{
+      if(chosenTheme===null){applyTheme(e.matches);colors();render();}
+    });
     const settingsToggle=root.querySelector('#g3-settings-toggle');
     let showSizeSettings=true;
     settingsToggle.addEventListener('click',()=>{
@@ -1777,6 +1811,7 @@ html>body{padding:0}</style>
     new ResizeObserver(resize).observe(root.querySelector('#g3-stage'));
     new MutationObserver(()=>{colors();render();}).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
     document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();stopMechanism();stopHeight();}});
+    applyTheme(systemTheme.matches);
     resize();update();
   })();
   </script>

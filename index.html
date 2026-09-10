@@ -1066,6 +1066,7 @@ html>body{padding:0}</style>
   <div class="text-small" id="g3-overlap" aria-live="polite"></div>
   <div class="text-small">已確認：150／300 mm 由船身外緣量度，帆布另計。側面設備深度／高度、帆布及鉸位未實測；未作完整碰撞或安全距離驗證。</div>
   <div class="text-small">人員按圖中固定站姿分段檢查，暫沿用晾架 150／設備 300 mm 的間隙條件；未包含伸手、探身及晃動範圍。</div>
+  <div class="text-small">晾衫架示意已移除每架兩條斜支撐繩；水平架及曬衣線保留。這是幾何比較，並非現場拆除或承托設計。</div>
   <div class="text-small">上／中／下三層使用相同尺寸；側面設備頂部與各層窗頂對齊。三層障礙物及喉管均納入簡化檢查；層距及扣接點為假設，現場路徑未確認。</div>
   <div class="text-small">無障礙時船身距左右牆各可在 300–1100 mm 間變化；向前總移近上限暫設 900 mm（距前牆最少 300 mm，假設），另受帆布、喉管及吊纜限制；滑台行程及承托待驗證。</div>
   <div class="text-small">分支喉：延至左右牆角 → 沿側牆向外延伸 → 再轉入側牆（尺寸示意）。收放及一／兩人配置未驗證承載、抗風及升降補償。</div>
@@ -1177,10 +1178,6 @@ html>body{padding:0}</style>
           result.push({kind:'rack',side,min:[wx-.02,1.17+floor,.005],max:[wx+.85,1.225+floor,.75]});
           for(const xx of [wx,wx+.83]){
             result.push({kind:'rack',side,min:[xx-.04,1.15+floor,0],max:[xx+.04,1.25+floor,.06]});
-            for(let j=0;j<16;j++){
-              const p=[xx,2.27-1.07*j/16+floor,.025+.710*j/16],q=[xx,2.27-1.07*(j+1)/16+floor,.025+.710*(j+1)/16];
-              result.push({kind:'rack',side,...segmentBox(p,q,.012)});
-            }
           }
         }
         if(a>0)result.push({kind:'unit',side:0,min:[0,.715+deviceLift+floor,1.05],max:[a,windowTop+floor,1.61]},{kind:'unit',side:1,min:[3-a,.715+deviceLift+floor,1.05],max:[3,windowTop+floor,1.61]});
@@ -1392,8 +1389,6 @@ html>body{padding:0}</style>
           for(const xx of [wx,wx+.83]){
             rod([xx,1.2,.025],[xx,1.2,.735],palette.fg,.015);
             box(xx-.035,1.155,.008,.07,.09,.045,palette.border);
-            line([xx,2.27,.025],[xx,1.20,.735],palette.fg,1.25,.9);
-            sphere([xx,2.27,.025],.021,palette.fg);
           }
           for(const zz of [.09,.735])rod([wx,1.2,zz],[wx+.83,1.2,zz],palette.fg,.015);
           for(let j=1;j<=5;j++){

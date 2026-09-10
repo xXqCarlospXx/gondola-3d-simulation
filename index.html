@@ -1049,7 +1049,7 @@ html>body{padding:0}</style>
   </div>
   <div class="text-small" id="g3-mech-status" aria-live="polite">展開扣接 · 可調整吊船位置</div>
   <div class="viz-row">
-    <button class="btn" id="g3-distance-toggle" type="button" aria-pressed="true" aria-controls="g3-canvas g3-distance-summary g3-distance-hint g3-readout g3-clearance">尺寸顯示：開</button>
+    <button class="btn" id="g3-distance-toggle" type="button" aria-pressed="false" aria-controls="g3-canvas g3-distance-summary g3-distance-hint g3-readout g3-clearance">尺寸顯示：關</button>
     <button class="btn" id="g3-settings-toggle" type="button" aria-expanded="true" aria-controls="g3-ac-setting g3-extent-setting">隱藏尺寸設定</button>
     <button class="btn" id="g3-play" type="button">播放一次橫移</button>
     <label class="form-label">船上人數 <select class="form-select" id="g3-people"><option value="2" selected>2 人</option><option value="1">1 人</option></select></label>
@@ -1057,11 +1057,11 @@ html>body{padding:0}</style>
     <label class="form-check"><input class="form-check-input" id="g3-wall" type="checkbox" checked><span class="form-check-label">外牆示意</span></label>
   </div>
   <div id="g3-stage"><canvas id="g3-canvas" role="img" aria-label="可旋轉的三維吊船模型，預設兩名工人，可切換一名。可播放收妥支架、升降至障礙物上方或下方、重新展開的動作。牆間淨闊暫用3000毫米，船身闊1600毫米。按三維簡化外廓及吊纜重新計算橫移範圍。高度、扣接點及設備尺寸為假設。"></canvas></div>
-  <div class="text-small" id="g3-distance-summary"></div>
-  <div class="text-small" id="g3-distance-hint">尺寸：牆面由船身外緣量度；設備及晾衫架顯示各側最近樓層的三維間距。船身與人員按各自外廓計算；「人」表示人員較近，帆布另計。虛線連接量度位置。</div>
-  <div class="viz-row tabular-nums" aria-live="polite" id="g3-readout">船身至左側面設備 300 mm · 至晾衫架 150 mm · 至右側面設備 300 mm</div>
+  <div class="text-small" id="g3-distance-summary" hidden></div>
+  <div class="text-small" id="g3-distance-hint" hidden>尺寸：牆面由船身外緣量度；設備及晾衫架顯示各側最近樓層的三維間距。船身與人員按各自外廓計算；「人」表示人員較近，帆布另計。虛線連接量度位置。</div>
+  <div class="viz-row tabular-nums" aria-live="polite" id="g3-readout" hidden>船身至左側面設備 300 mm · 至晾衫架 150 mm · 至右側面設備 300 mm</div>
   <div class="viz-row text-small" id="g3-legend"><span><i class="g3-swatch g3-boat"></i>吊船</span><span><i class="g3-swatch g3-cloth"></i>橙色：原有接物帆布</span><span><i class="g3-swatch g3-frame"></i>粉色：假設扣接架／左右導軌</span><span><i class="g3-swatch g3-slide"></i>前後滑台</span></div>
-  <div class="text-small" id="g3-clearance">工作間隙目標：船身至晾衫架約 150 mm；至兩側側面設備各約 300 mm。</div>
+  <div class="text-small" id="g3-clearance" hidden>工作間隙目標：船身至晾衫架約 150 mm；至兩側側面設備各約 300 mm。</div>
   <div class="text-small" id="g3-ac-note">牆間 3000 mm；側面設備各佔位 400 mm 為重現圖示的對稱假設。</div>
   <div class="text-small" id="g3-cloth-clearance" aria-live="polite"></div>
   <div class="text-small" id="g3-overlap" aria-live="polite"></div>
@@ -1091,7 +1091,7 @@ html>body{padding:0}</style>
     const ac=root.querySelector('#g3-ac');
     const people=root.querySelector('#g3-people');
     const distanceToggle=root.querySelector('#g3-distance-toggle');
-    let showDistances=true;
+    let showDistances=false;
     const heightSelect=root.querySelector('#g3-height'),heightPlay=root.querySelector('#g3-height-play');
     const heightSlider=root.querySelector('#g3-height-slider'),heightValue=root.querySelector('#g3-height-value');
     const heightTarget=root.querySelector('#g3-height-target');

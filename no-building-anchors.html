@@ -1039,8 +1039,11 @@ html>body{padding:0}</style>
     <label class="form-label"><span>向前移近 · <output id="b-z-target">0</output> mm</span><input id="b-z" class="form-range" type="range" min="0" max="900" value="0" step="10" aria-label="目標向前移近，毫米"></label>
   </div>
   <div class="viz-row">
-    <button type="button" class="btn" id="b-upper">層間 +2200 mm</button>
-    <button type="button" class="btn" id="b-lower">層間 −800 mm</button>
+    <button type="button" class="btn" id="b-top">上層 +3000 mm</button>
+    <button type="button" class="btn" id="b-upper">上／中層間最大活動範圍 +2200 mm</button>
+    <button type="button" class="btn" id="b-middle">中層 0 mm</button>
+    <button type="button" class="btn" id="b-lower">中／下層間最大活動範圍 −800 mm</button>
+    <button type="button" class="btn" id="b-bottom">下層 −3000 mm</button>
     <button type="button" class="btn" id="b-return">工作船退回中位</button>
     <button type="button" class="btn" id="b-pause" disabled>暫停動畫</button>
     <button type="button" class="btn" id="b-skip" disabled>跳過動畫</button>
@@ -1615,7 +1618,7 @@ function syncTargets(){
 function targetReadouts(){for(const name of ['x','z','height'])$('#b-'+name+'-target').textContent=$('#b-'+name).value;}
 function requested(){return {x:Number($('#b-x').value),z:Number($('#b-z').value),h:Number($('#b-height').value)/1000,f:100};}
 for(const name of ['x','z','height']){const control=$('#b-'+name);control.addEventListener('input',targetReadouts);control.addEventListener('change',()=>planTo(requested()));}
-for(const [id,h]of [['b-upper',2.2],['b-lower',-.8]])$('#'+id).addEventListener('click',()=>{$('#b-height').value=String(h*1000);$('#b-x').value='700';$('#b-z').value='0';targetReadouts();planTo(requested());});
+for(const [id,h]of [['b-top',3],['b-upper',2.2],['b-middle',0],['b-lower',-.8],['b-bottom',-3]])$('#'+id).addEventListener('click',()=>{$('#b-height').value=String(h*1000);$('#b-x').value='700';$('#b-z').value='0';targetReadouts();planTo(requested());});
 $('#b-return').addEventListener('click',()=>{$('#b-x').value='700';$('#b-z').value='0';$('#b-height').value=String(Math.round(verticalOffset*1000));targetReadouts();planTo(requested());});
 $('#b-pause').addEventListener('click',()=>{paused=!paused;if(!paused){lastTime=performance.now();raf=requestAnimationFrame(tick);}else cancelAnimationFrame(raf);update();});
 $('#b-skip').addEventListener('click',()=>{if(!motion)return;assign(motion.path.at(-1));motion=null;paused=false;cancelAnimationFrame(raf);notice='已完成通過幾何檢查的路徑；結構強度及失效保護未驗證。';update();});

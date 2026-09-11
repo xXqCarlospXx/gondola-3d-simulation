@@ -1,0 +1,1621 @@
+<!doctype html>
+<html lang="zh-Hant" data-visualize-standalone>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>方案 B — 無新增建築支點的吊船研究</title>
+<style>:root {
+  color-scheme: light dark;
+  background-color: var(
+    --background,
+    var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
+  ) !important;
+
+  /* Agent-facing contract; keep in sync with SKILL.md. */
+  --background: var(
+    --color-background-primary,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --card: color-mix(in oklab, var(--foreground) 5%, var(--background));
+  --card-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --popover: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255), rgb(45 45 45))
+  );
+  --popover-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --primary: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --primary-foreground: var(
+    --color-text-inverse,
+    light-dark(rgb(255 255 255), rgb(13 13 13))
+  );
+  --secondary: var(
+    --color-background-secondary,
+    light-dark(rgb(255 255 255 / 96%), rgb(54 54 54 / 96%))
+  );
+  --secondary-foreground: var(
+    --color-text-primary,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --muted: color-mix(in srgb, var(--foreground) 10%, transparent);
+  --muted-foreground: var(
+    --color-text-secondary,
+    light-dark(rgb(26 28 31 / 49.4%), rgb(255 255 255 / 49.8%))
+  );
+  --accent: var(
+    --color-background-info,
+    light-dark(rgb(229 242 255), rgb(13 39 63))
+  );
+  --accent-foreground: var(
+    --color-text-info,
+    light-dark(rgb(51 156 255), rgb(131 195 255))
+  );
+  --destructive: var(
+    --color-text-warning,
+    light-dark(rgb(226 85 7), rgb(255 133 73))
+  );
+  --border: var(
+    --color-border-secondary,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+  --input: var(
+    --color-border-primary,
+    light-dark(
+      rgb(26 28 31 / 11.8%),
+      color-mix(in oklab, rgb(0 0 0) 10%, transparent)
+    )
+  );
+  --ring: var(
+    --color-ring-primary,
+    light-dark(rgb(51 156 255), rgb(131 195 255 / 76%))
+  );
+  --font-size-base: var(--font-text-md-size, 14px);
+  --blue: light-dark(rgb(51 156 255), rgb(51 156 255));
+  --orange: light-dark(rgb(226 85 7), rgb(251 106 34));
+  --green: light-dark(rgb(0 162 64), rgb(64 201 119));
+  --red: light-dark(rgb(224 46 42), rgb(255 103 100));
+  --purple: light-dark(rgb(146 79 247), rgb(173 123 249));
+  --yellow: light-dark(rgb(255 195 0), rgb(255 210 64));
+  --viz-series-1: var(--primary);
+  --viz-series-2: light-dark(rgb(243 136 59), rgb(245 154 86));
+  --viz-series-3: light-dark(rgb(93 201 119), rgb(116 213 139));
+  --viz-series-4: light-dark(rgb(235 119 177), rgb(240 143 192));
+  --viz-series-5: light-dark(rgb(155 121 236), rgb(170 145 239));
+  --viz-series-6: light-dark(rgb(58 185 177), rgb(90 203 194));
+
+  /* Internal implementation variables; not part of the agent contract. */
+  --font-sans: -apple-system, system-ui, "Segoe UI", sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Liberation Mono",
+    monospace;
+  --font-size-normal: max(11px, var(--font-size-base));
+  --font-size-tooltip: calc(var(--font-size-base) - 1px);
+  --font-size-small: max(11px, calc(var(--font-size-base) - 2px));
+  --font-size-h1: calc(var(--font-size-normal) * 1.7142857143);
+  --font-size-h2: calc(var(--font-size-normal) * 1.4285714286);
+  --font-size-h3: calc(var(--font-size-normal) * 1.2857142857);
+  --font-weight-normal: 430;
+  --font-weight-medium: 500;
+  --icon-size: 16px;
+  --line-height-normal: calc(var(--font-size-normal) * 1.5);
+  --line-height-tooltip: calc(var(--font-size-tooltip) * 1.4285714286);
+  --line-height-small: calc(var(--font-size-small) + 4px);
+  --corner-shape: round;
+  --radius: var(--border-radius-lg, 10px);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-2xl: calc(var(--radius) * 1.6);
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px -1px rgb(0 0 0 / 8%);
+  --checkmark-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 17 17'%3E%3Cpath d='M12.8961 3.64101C13.1297 3.41418 13.4984 3.37523 13.7779 3.56581C14.0571 3.75635 14.1554 4.11331 14.0299 4.41347L13.9615 4.53847L7.71151 13.7045C7.59411 13.8767 7.4063 13.9877 7.19881 14.0072C6.99136 14.0267 6.78564 13.9533 6.63826 13.806L2.88826 10.056L2.79842 9.9457C2.6192 9.67407 2.64927 9.30496 2.88826 9.06581C3.12738 8.82669 3.49647 8.79676 3.76815 8.97597L3.8785 9.06581L7.03084 12.2182L12.8053 3.74941L12.8961 3.64101Z'/%3E%3C/svg%3E");
+
+  /* Legacy aliases; not part of the current agent contract. */
+  --viz-bg: transparent;
+  --viz-panel: var(--card);
+  --viz-border: var(--border);
+  --viz-text: var(--foreground);
+  --viz-muted: var(--muted-foreground);
+  --viz-accent: var(--primary);
+  --viz-accent-text: var(--primary-foreground);
+  --viz-accent-bg: var(--accent);
+  --viz-font-size: var(--font-size-base);
+  --viz-warning: var(--destructive);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html > body {
+  /* Preserve MCP aliases for older inline renderers without creating :root cycles. */
+  --color-background-primary: var(
+    --background,
+    light-dark(rgb(255 255 255), rgb(24 24 24))
+  );
+  --color-text-primary: var(
+    --foreground,
+    light-dark(rgb(26 28 31), rgb(255 255 255))
+  );
+  --color-border-secondary: var(
+    --border,
+    light-dark(rgb(26 28 31 / 8%), rgb(255 255 255 / 8.2%))
+  );
+
+  margin: 0;
+  padding: var(--visualize-paint-gutter, 0px);
+  color: var(--foreground);
+  background: transparent !important;
+  font-family: var(--font-sans) !important;
+  font-size: var(--font-size-normal);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+}
+
+a {
+  color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
+  cursor: pointer;
+  font-weight: var(--font-weight-medium, 500);
+  text-decoration: none;
+  text-underline-offset: 2px;
+}
+
+a:is(:hover, :focus-visible) {
+  text-decoration-line: underline;
+  text-decoration-style: dashed;
+  text-decoration-thickness: 0.5px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin-block: 0;
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-size: var(--font-size-h3);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.3;
+}
+
+b,
+strong,
+th {
+  font-weight: var(--font-weight-medium);
+}
+
+code:not(pre code) {
+  display: inline;
+  padding: 1px 6px;
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.92em;
+  overflow-wrap: anywhere;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  word-break: break-word;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+}
+
+.table :is(th, td) {
+  padding-block: 10px;
+  padding-inline: 0 24px;
+  overflow-wrap: anywhere;
+  border-bottom: 1px solid var(--border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table-responsive > .table :is(th, td) {
+  overflow-wrap: break-word;
+}
+
+.table :is(th, td):last-child {
+  padding-inline-end: 0;
+}
+
+.table :is(caption, thead th) {
+  font-weight: 600;
+}
+
+.table thead th {
+  padding-block: 8px;
+  border-bottom-color: color-mix(in srgb, var(--foreground) 16%, transparent);
+}
+
+.table tbody tr:last-child :is(th, td) {
+  border-bottom: 0;
+}
+
+.table.table-sm :is(th, td) {
+  padding-block: 6px;
+}
+
+.table.table-sm :is(th, td):not(:last-child) {
+  padding-inline-end: 16px;
+}
+
+.table :is(.text-end, [align="right"]) {
+  text-align: end;
+  font-variant-numeric: tabular-nums;
+}
+
+.table :is(.text-center, [align="center"]) {
+  text-align: center;
+}
+
+.table .text-nowrap {
+  white-space: nowrap;
+}
+
+#widget {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 0;
+  background: transparent !important;
+}
+
+.card {
+  min-width: 0;
+  padding: 12px;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  border-radius: var(--radius-2xl);
+  corner-shape: var(--corner-shape);
+  color: var(--card-foreground);
+  background: var(--card);
+}
+
+#widget > :not(.card, .progress) {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.tooltip {
+  position: fixed;
+  z-index: 50;
+  top: 0;
+  left: 0;
+  width: max-content;
+  max-width: min(
+    20rem,
+    var(--tooltip-available-width, calc(100vw - 10px)),
+    calc(100vw - 10px)
+  );
+  max-height: min(
+    var(--tooltip-available-height, calc(100vh - 10px)),
+    calc(100vh - 10px)
+  );
+  padding: 4px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--popover-foreground);
+  background: var(--popover);
+  box-shadow: none;
+  font-size: var(--font-size-tooltip);
+  line-height: var(--line-height-tooltip);
+  overflow-wrap: break-word;
+  white-space: normal;
+  pointer-events: none;
+  user-select: none;
+}
+
+.viz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(max(180px, 24%), 1fr));
+  gap: 10px;
+}
+
+.viz-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.viz-stat-value {
+  font-size: var(--font-size-h2);
+  font-weight: var(--font-weight-medium);
+  line-height: 1.25;
+}
+
+.viz-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+hr {
+  width: 100%;
+  height: 1px;
+  margin-block: 6px;
+  border: 0;
+  background: var(--border);
+}
+
+.nav {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.progress {
+  display: flex;
+  height: 8px;
+  margin-block: calc((var(--line-height-normal, 1.5em) - 8px) / 2);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+}
+
+.progress-bar:only-child {
+  border-radius: var(--radius-full);
+}
+
+.progress-bar {
+  height: 100%;
+  flex-shrink: 0;
+  border: 0;
+  background: var(--viz-series-1);
+}
+
+.viz-badge {
+  padding: 3px 8px;
+  border-radius: var(--radius-full);
+  color: var(--accent-foreground);
+  background: var(--accent);
+  font-weight: var(--font-weight-medium);
+}
+
+small,
+.text-small,
+.viz-badge {
+  font-size: var(--font-size-small);
+  line-height: var(--line-height-small);
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.viz-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.viz-controls > .form-label {
+  display: grid;
+  min-width: min(100%, 260px);
+  flex: 1 1 280px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 2px 12px;
+  margin-bottom: 0;
+}
+
+.viz-controls > .form-label > :is(.form-control, .form-range, .form-select) {
+  grid-column: 1 / -1;
+}
+
+.btn,
+.nav-link,
+.form-check-input,
+.form-control,
+.form-range,
+.form-select {
+  font: inherit;
+}
+
+.btn,
+.nav-link {
+  appearance: button;
+  display: inline-flex;
+  inline-size: fit-content;
+  max-inline-size: 100%;
+  min-height: 28px;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0 8px;
+  -webkit-app-region: no-drag;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: var(--cursor-interaction, pointer);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.btn:is(.btn-block, .viz-tile) {
+  inline-size: 100%;
+}
+
+.btn.viz-tile {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+a.btn {
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:not(:disabled):hover,
+.nav-link:not(:disabled):not([aria-disabled="true"]):hover {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.btn-primary {
+  border-color: transparent;
+  color: var(--primary-foreground);
+  background: var(--foreground);
+  background-clip: padding-box;
+}
+
+.btn-primary .text-muted {
+  color: color-mix(in srgb, var(--primary-foreground) 50%, transparent);
+}
+
+.btn-primary:not(:disabled):hover {
+  background: color-mix(in srgb, var(--foreground) 80%, transparent);
+  background-clip: padding-box;
+}
+
+.btn-ghost {
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.btn-ghost:not(:disabled):hover {
+  color: var(--foreground);
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.nav-pills .nav-link {
+  min-width: 0;
+  border-color: transparent;
+  color: var(--muted-foreground);
+  background: transparent;
+}
+
+.nav-justified .nav-link {
+  flex: 1 1 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+
+.nav-pills .nav-link.active {
+  color: var(--foreground);
+  background: var(--muted);
+}
+
+.btn:disabled,
+.nav-link:disabled,
+.nav-link[aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+[data-lucide] {
+  stroke-width: 1.6;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--foreground);
+}
+
+.form-control {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background: var(--secondary);
+}
+
+.form-control::placeholder {
+  color: var(--muted-foreground);
+}
+
+.form-control[type="file"] {
+  padding: 0;
+  overflow: hidden;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control[type="file"]::file-selector-button {
+  min-height: 26px;
+  margin-right: 8px;
+  padding: 0 8px;
+  border: 0;
+  border-right: 1px solid var(--input);
+  color: var(--secondary-foreground);
+  background: var(--secondary);
+  cursor: inherit;
+  font: inherit;
+}
+
+.form-control[type="file"]:not(:disabled):hover::file-selector-button {
+  background: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-control-color[type="color"] {
+  width: 40px;
+  height: 28px;
+  padding: 3px;
+  cursor: var(--cursor-interaction, pointer);
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.form-control-color[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: calc(var(--radius-lg) - 4px);
+  corner-shape: var(--corner-shape);
+}
+
+textarea.form-control {
+  height: auto;
+  min-height: 72px;
+  padding: 8px 10px;
+  resize: vertical;
+}
+
+.form-control:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.form-select {
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  margin: 0;
+  padding: 0 32px 0 8px;
+  outline: none;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  corner-shape: var(--corner-shape);
+  color: var(--foreground);
+  background-color: var(--secondary);
+  background-image:
+    linear-gradient(45deg, transparent 50%, var(--muted-foreground) 50%),
+    linear-gradient(135deg, var(--muted-foreground) 50%, transparent 50%);
+  background-position:
+    calc(100% - 14px) 50%,
+    calc(100% - 10px) 50%;
+  background-repeat: no-repeat;
+  background-size: 4px 4px;
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-select:not(:disabled):hover {
+  background-color: color-mix(in srgb, var(--foreground) 6%, var(--secondary));
+}
+
+.form-select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-check {
+  display: flex;
+  min-height: 20px;
+  align-items: center;
+  gap: 6px;
+}
+
+.form-check-input {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  margin: 0;
+  border: 1px solid var(--input);
+  color: var(--primary-foreground);
+  background-color: transparent;
+  cursor: var(--cursor-interaction, default);
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    box-shadow 150ms;
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"] {
+  border-color: var(--input);
+  border-radius: var(--radius-sm);
+  corner-shape: var(--corner-shape);
+  background-color: var(--secondary);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input:not(:disabled):not(:checked):hover {
+  background-color: var(--card);
+}
+
+.form-check:not(.form-switch) .form-check-input[type="checkbox"]:checked {
+  border-color: var(--primary);
+  background-color: var(--primary);
+}
+
+.form-check:not(.form-switch)
+  .form-check-input[type="checkbox"]:checked::before {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--primary-foreground);
+  content: "";
+  mask: var(--checkmark-image) center / 12px 12px no-repeat;
+}
+
+.form-check-input[type="radio"] {
+  width: 14px;
+  height: 14px;
+  border-radius: var(--radius-full);
+}
+
+.form-check-input[type="radio"]:checked {
+  border: 2px solid var(--primary);
+  background:
+    radial-gradient(circle, var(--primary-foreground) 0 2.5px, transparent 3px),
+    var(--primary);
+}
+
+.form-check:not(.form-switch) .form-check-input:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.form-check:not(.form-switch) .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+}
+
+.form-switch .form-check-input:disabled,
+.form-switch .form-check-input:disabled + .form-check-label {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-check-label {
+  color: var(--foreground);
+  cursor: var(--cursor-interaction, default);
+}
+
+.form-switch .form-check-input {
+  position: relative;
+  width: 32px;
+  height: 20px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--muted);
+  box-shadow: none;
+  transition: background-color 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input::before {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  box-sizing: border-box;
+  border: 1px solid light-dark(var(--primary-foreground), var(--foreground));
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+  box-shadow: var(--shadow-sm);
+  content: "";
+  transform: translate(2px, -50%);
+  transition: transform 200ms cubic-bezier(0, 0, 0.2, 1);
+}
+
+.form-switch .form-check-input:checked {
+  background: var(--primary);
+}
+
+.form-switch .form-check-input:checked::before {
+  transform: translate(14px, -50%);
+}
+
+.form-switch .form-check-input:focus-visible {
+  box-shadow: 0 0 0 2px var(--ring);
+}
+
+.form-range {
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: 28px;
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  outline: none;
+  border: 0;
+  accent-color: var(--primary);
+  background: linear-gradient(
+      color-mix(in srgb, var(--foreground) 7%, transparent),
+      color-mix(in srgb, var(--foreground) 7%, transparent)
+    )
+    center / 100% 2px no-repeat;
+}
+
+.form-range::-webkit-slider-runnable-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  margin-top: 4px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-webkit-slider-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range::-moz-range-track {
+  height: 28px;
+  background: transparent;
+}
+
+.form-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-full);
+  background: light-dark(var(--primary-foreground), var(--foreground));
+}
+
+.form-range:focus-visible::-moz-range-thumb {
+  border-color: var(--ring);
+  box-shadow: inset 0 0 0 1px var(--ring);
+}
+
+.form-range:disabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.btn:not(.btn-primary, .viz-tile):is(
+  [aria-pressed="true"],
+  [aria-selected="true"],
+  .is-selected
+) {
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+  background: var(--primary);
+}
+
+.btn.viz-tile:is([aria-pressed="true"], [aria-selected="true"], .is-selected) {
+  border-color: var(--primary);
+  box-shadow: inset 0 0 0 1px var(--primary);
+}
+
+.btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+@media (pointer: coarse) {
+  .btn,
+  .nav-link,
+  .form-control,
+  .form-select {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Keep small-screen WebKit from zooming when a text field receives focus. */
+  .form-control,
+  .form-select {
+    font-size: max(16px, var(--font-size-normal));
+  }
+
+  .form-control[type="file"]::file-selector-button {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .form-control-color[type="color"] {
+    width: 44px;
+    height: 44px;
+  }
+
+  .form-control:is(
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="time"],
+    [type="week"]
+  ) {
+    min-width: 0;
+    max-width: 100%;
+    padding-block: 8px;
+  }
+
+  .form-check {
+    min-height: 44px;
+    padding-inline: 15px;
+  }
+
+  .form-check-input {
+    position: relative;
+  }
+
+  .form-check-input::after {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    content: "";
+    transform: translate(-50%, -50%);
+  }
+
+  .form-check-label {
+    display: inline-flex;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+  }
+
+  .form-range {
+    height: 44px;
+    touch-action: pan-y;
+  }
+
+  .form-range::-webkit-slider-runnable-track {
+    height: 44px;
+  }
+
+  .form-range::-moz-range-track {
+    height: 44px;
+  }
+
+  .form-range::-webkit-slider-thumb {
+    margin-top: 12px;
+  }
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+#widget > svg {
+  width: 100%;
+}
+
+/* Model-authored chart rules can otherwise stretch icons after these styles load. */
+svg.lucide {
+  display: block;
+  width: var(--icon-size) !important;
+  height: var(--icon-size) !important;
+  flex: none;
+  margin: 0 !important;
+  stroke-width: 1.6;
+}
+
+.text-warning,
+.text-destructive {
+  color: var(--destructive);
+}
+
+html>body{padding:0}</style>
+</head>
+<body>
+<div id="gondola-air">
+  <div class="viz-row"><strong>方案 B · 無新增建築支點</strong><span class="text-small">水平推力定位研究 · 未驗證載人可行性</span></div>
+  <div class="viz-row">
+    <button type="button" class="btn" id="g3-theme-toggle" aria-label="深色模式" aria-pressed="false">深色模式：關</button>
+    <button type="button" class="btn" id="g3-distance-toggle" aria-pressed="false">尺寸顯示：關</button>
+    <label class="form-label">船上人數 <select class="form-select" id="g3-people"><option value="2">2 人</option><option value="1">1 人</option></select></label>
+    <label class="form-label">視角 <select class="form-select" id="g3-view"><option value="iso">斜角</option><option value="under">船底推力模組</option><option value="front">正面</option><option value="top">俯視</option><option value="side">側面</option></select></label>
+    <label class="form-check"><input id="g3-wall" class="form-check-input" type="checkbox" checked><span class="form-check-label">外牆示意</span></label>
+  </div>
+  <div class="viz-controls">
+    <label class="form-label"><span>目標高度 · <output id="b-height-target">0</output> mm</span><input id="b-height" class="form-range" type="range" min="-3000" max="3000" value="0" step="10" aria-label="目標高度，毫米"></label>
+    <label class="form-label"><span>目標左右位置 · 距左牆 <output id="b-x-target">700</output> mm</span><input id="b-x" class="form-range" type="range" min="300" max="1100" value="700" step="10" aria-label="目標距左牆位置，毫米"></label>
+    <label class="form-label"><span>目標向前移近 · <output id="b-z-target">0</output> mm</span><input id="b-z" class="form-range" type="range" min="0" max="900" value="0" step="10" aria-label="目標向前移近，毫米"></label>
+  </div>
+  <div class="viz-row">
+    <button type="button" class="btn" id="b-upper">層間 +2200 mm</button>
+    <button type="button" class="btn" id="b-lower">層間 −800 mm</button>
+    <button type="button" class="btn" id="b-return">退回吊點正下方</button>
+    <button type="button" class="btn" id="b-pause" disabled>暫停動畫</button>
+    <button type="button" class="btn" id="b-skip" disabled>跳過動畫</button>
+  </div>
+  <div class="text-small">慢速演示目標位置；升降先退回及收帆布。動畫不代表控制器或推力已足夠。</div>
+  <div id="b-status" class="text-small" aria-live="polite"></div>
+  <div class="viz-controls">
+    <label class="form-label"><span>總懸吊質量假設 · kg（含人員及新裝置）</span><input id="b-mass" class="form-control" type="number" min="100" max="2000" step="10" value="600"></label>
+    <label class="form-label"><span>側面設備各向內佔位 · <output id="b-ac-value">400</output> mm</span><input id="g3-ac" class="form-range" type="range" min="0" max="600" step="10" value="400"></label>
+    <label class="form-label"><span>帆布每邊伸出 · <output id="b-extent-value">250</output> mm（未實測）</span><input id="g3-extent" class="form-range" type="range" min="100" max="500" step="10" value="250"></label>
+  </div>
+  <div id="b-force" class="text-small" aria-live="polite"></div>
+  <div id="g3-stage"><canvas id="g3-canvas" role="img" aria-label="無新增建築支點的吊船研究模型，保留固定天台吊纜，船底四個粉色水平推力模組；綠箭嘴表示所需推力方向，非已驗證性能。"></canvas></div>
+  <div class="viz-row text-small"><span>藍：吊船及安全帽</span><span>橙：原有接物帆布</span><span>粉：船載推力模組</span><span>綠箭嘴：所需合推力方向</span></div>
+  <div id="g3-distance-summary" class="text-small" hidden></div>
+  <div id="b-clearance" class="text-small" aria-live="polite"></div>
+  <div class="text-small">仍由原有天台吊點承重；新增建築支點 0 個。模組平面佔位 320 × 320 mm 為示意，並非能提供所需推力的設備尺寸。</div>
+  <div class="text-small">距晾架 ≥150 mm／設備 ≥300 mm 沿用既有模型條件；三層幾何、帆布、吊纜、推力模組及喉管納入簡化檢查。</div>
+  <div class="text-small">需持續推力抵抗吊纜回中力。斷電可擺回並撞向障礙物；冗餘供電與失效後避碰尚未解決，不能作載人施工依據。</div>
+  <div class="text-small">未計風力、噴流揚塵／掉石、近牆推力衰減、噪音、俯仰及轉向力矩。煤氣環境的點火風險及設備適用性須另行評估。</div>
+  <style>
+        #gondola-air { color:var(--foreground); --g3-boat-color:light-dark(#3489d5,#72b7ef); --g3-frame-color:light-dark(#df72ac,#f19ac7); --g3-cloth-color:light-dark(#ed8b20,#ffad4b); }
+    #gondola-air[data-g3-theme] {
+      background:var(--background);
+      --background:light-dark(rgb(255 255 255),rgb(24 24 24));
+      --foreground:light-dark(rgb(26 28 31),rgb(255 255 255));
+      --primary:light-dark(rgb(51 156 255),rgb(131 195 255));
+      --primary-foreground:light-dark(rgb(255 255 255),rgb(13 13 13));
+      --secondary:light-dark(rgb(255 255 255),rgb(54 54 54));
+      --secondary-foreground:var(--foreground);
+      --muted:color-mix(in srgb,var(--foreground) 10%,transparent);
+      --muted-foreground:color-mix(in srgb,var(--foreground) 65%,var(--background));
+      --border:color-mix(in srgb,var(--foreground) 15%,transparent);
+      --input:color-mix(in srgb,var(--foreground) 20%,transparent);
+      --ring:var(--primary);
+      --destructive:light-dark(rgb(226 85 7),rgb(255 133 73));
+    }
+
+    #gondola-air #g3-stage { width:100%; }
+    #gondola-air #g3-canvas { display:block;width:100%;touch-action:none;cursor:grab; }
+    #gondola-air [hidden] { display:none !important; }
+  </style>
+  <script>
+    (()=>{
+const root=document.getElementById('gondola-air');
+const $=s=>root.querySelector(s);
+const canvas=$('#g3-canvas'),ctx=canvas.getContext('2d');
+// Actual pose is separate from requested slider positions.
+const sx={value:'700'},sz={value:'0'},fold={value:'100'},mech={value:'0'};
+const ac=$('#g3-ac'),extent=$('#g3-extent'),people=$('#g3-people'),view=$('#g3-view'),wall=$('#g3-wall');
+const themeToggle=$('#g3-theme-toggle'),systemTheme=window.matchMedia('(prefers-color-scheme: dark)');
+let chosenTheme=null,showDistances=false;
+function applyTheme(dark){
+  const theme=dark?'dark':'light';root.dataset.g3Theme=theme;root.style.colorScheme=theme;
+  if(document.documentElement.hasAttribute('data-visualize-standalone'))document.documentElement.style.setProperty('color-scheme',theme,'important');
+  themeToggle.textContent=dark?'深色模式：開':'深色模式：關';themeToggle.setAttribute('aria-pressed',String(dark));
+}
+let width=700,height=700,yaw=.47,pitch=.34,zoom=1,drag=null,shapes=[],palette={};
+let verticalOffset=0,drawOffset=0,drawLayer=0,drawingWorker=false;
+const anchorHeight=6.3,floorSpacing=3,floorOffsets=[-3,0,3],facadeBottom=-3.15,facadeTop=6;
+const windowBottom=1.23,windowHeight=1.10,windowTop=2.33,deviceHeight=.48,deviceLift=windowTop-(.78+deviceHeight);
+const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
+
+    const clamp=v=>Math.max(0,Math.min(1,v));
+    const ease=v=>{v=clamp(v);return v*v*(3-2*v);};
+    function mechanism(){const p=Number(mech.value)/100;return {p,jaw:ease((p-.20)/.15),tx:ease((p-.35)/.30),tz:ease((p-.65)/.25),pin:ease((p-.90)/.10)};}
+    const probe=document.createElement('span');probe.style.display='none';root.appendChild(probe);
+    const colorCanvas=document.createElement('canvas');colorCanvas.width=1;colorCanvas.height=1;const colorCtx=colorCanvas.getContext('2d',{willReadFrequently:true});
+    function color(name){colorCtx.clearRect(0,0,1,1);probe.style.color='var(--background)';colorCtx.fillStyle=getComputedStyle(probe).color;colorCtx.fillRect(0,0,1,1);probe.style.color=`var(${name})`;colorCtx.fillStyle=getComputedStyle(probe).color;colorCtx.fillRect(0,0,1,1);const p=colorCtx.getImageData(0,0,1,1).data;return `rgb(${p[0]},${p[1]},${p[2]})`;}
+    function colors(){palette={fg:color('--foreground'),bg:color('--background'),muted:color('--muted'),border:color('--border'),boat:color('--g3-boat-color'),frame:color('--g3-frame-color'),slide:color('--viz-series-3'),cloth:color('--g3-cloth-color')};}
+    function shade(c,f){const nums=c.match(/[\d.]+/g);if(!nums||nums.length<3)return c;return `rgb(${nums.slice(0,3).map(v=>Math.min(255,Math.round(Number(v)*f))).join(',')})`;}
+    function verticalView(){return {lo:facadeBottom,hi:facadeTop+.10};}
+    function camera(p){const v=verticalView(),x=p[0]-1.5,y=p[1]-(v.lo+v.hi)/2,z=p[2]-1.0;const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);return [cy*x-sy*z,cp*y-sp*(sy*x+cy*z),sp*y+cp*(sy*x+cy*z)];}
+    let scale=1;
+    function project(p){const q=camera(p);return [width/2+q[0]*scale,height/2-q[1]*scale,q[2]];}
+    function shape(points,fill,stroke,lineWidth=1,alpha=1,dash=[]){points=points.map(p=>[p[0],p[1]+drawOffset,p[2]]);shapes.push({points,fill,stroke,lineWidth,alpha,dash,layer:drawLayer,worker:drawingWorker,d:points.reduce((s,p)=>s+camera(p)[2],0)/points.length});}
+    function line(a,b,col=palette.fg,lw=1.5,alpha=1,dash=[]){shape([a,b],null,col,lw,alpha,dash);}
+    function box(x,y,z,w,h,d,c,alpha=1){
+      const p=[[x,y,z],[x+w,y,z],[x+w,y+h,z],[x,y+h,z],[x,y,z+d],[x+w,y,z+d],[x+w,y+h,z+d],[x,y+h,z+d]];
+      const faces=[[[0,1,2,3],.82],[[4,7,6,5],1],[[0,4,5,1],.66],[[3,2,6,7],1.12],[[0,3,7,4],.9],[[1,5,6,2],.74]];
+      for(const [inds,f]of faces)shape(inds.map(i=>p[i]),shade(c,f),null,1,alpha);
+    }
+    function rod(a,b,c,r=.018){
+      const v=b.map((n,i)=>n-a[i]),len=Math.hypot(...v);if(len===0)return;
+      const n=v.map(n=>n/len);const ref=Math.abs(n[1])<.9?[0,1,0]:[1,0,0];
+      let u=[n[1]*ref[2]-n[2]*ref[1],n[2]*ref[0]-n[0]*ref[2],n[0]*ref[1]-n[1]*ref[0]];const ul=Math.hypot(...u);u=u.map(n=>n/ul);
+      const t=[n[1]*u[2]-n[2]*u[1],n[2]*u[0]-n[0]*u[2],n[0]*u[1]-n[1]*u[0]];
+      const rings=[a,b].map(p=>Array.from({length:6},(_,j)=>p.map((v,i)=>v+r*(Math.cos(j*Math.PI/3)*u[i]+Math.sin(j*Math.PI/3)*t[i]))));
+      for(let j=0;j<6;j++)shape([rings[0][j],rings[0][(j+1)%6],rings[1][(j+1)%6],rings[1][j]],shade(c,.78+.24*Math.sin(j)),null);
+      shape(rings[1],c,null);
+    }
+    function sphere(p,r,c){p=[p[0],p[1]+drawOffset,p[2]];shapes.push({sphere:true,p,r,c,layer:drawLayer,worker:drawingWorker,d:camera(p)[2]});}
+    function ringMesh(cx,cz,profile,c){
+      // True 3D surfaces, sorted per face. No overlapping camera-facing circles for heads or helmets.
+      const slices=18;
+      const rings=profile.map(([y,rx,rz])=>Array.from({length:slices},(_,j)=>[cx+rx*Math.cos(j*2*Math.PI/slices),y,cz+rz*Math.sin(j*2*Math.PI/slices)]));
+      for(let k=0;k<rings.length-1;k++)for(let j=0;j<slices;j++){
+        const next=(j+1)%slices;
+        shape([rings[k][j],rings[k][next],rings[k+1][next],rings[k+1][j]],shade(c,.83+.14*Math.cos((j+.5)*2*Math.PI/slices-.7)),null);
+      }
+      shape(rings[0],shade(c,.72),null);
+      shape(rings[rings.length-1],shade(c,1.06),null);
+    }
+    function worker(px,pz){
+      // Approximate adult proportions; the head ends below the distinct helmet brim.
+      for(const side of [-1,1]){
+        box(px+side*.085-.045,.53,pz-.115,.09,.06,.20,palette.fg);
+        rod([px+side*.085,.59,pz],[px+side*.075,1.38,pz],palette.fg,.047);
+      }
+      box(px-.145,1.36,pz-.09,.29,.54,.18,palette.muted);
+      rod([px,1.89,pz],[px,1.98,pz],palette.fg,.039);
+      for(const side of [-1,1]){
+        rod([px+side*.165,1.83,pz],[px+side*.195,1.59,pz-.03],palette.fg,.033);
+        rod([px+side*.195,1.59,pz-.03],[px+side*.20,1.39,pz-.10],palette.fg,.031);
+      }
+      ringMesh(px,pz,[[1.950,.040,.045],[1.975,.073,.072],[2.025,.086,.078],[2.080,.088,.079],[2.120,.080,.075],[2.145,.068,.065]],palette.fg);
+      ringMesh(px,pz,[[2.147,.125,.120],[2.166,.125,.120]],palette.boat);
+      ringMesh(px,pz,[[2.166,.105,.100],[2.200,.096,.093],[2.235,.062,.061],[2.255,0,0]],palette.boat);
+    }
+    let obstacleCacheKey=null,obstacleCache=[];
+    function obstacleBoxes(){
+      const a=Number(ac.value)/1000;
+      if(obstacleCacheKey===a)return obstacleCache;
+      obstacleCacheKey=a;
+      obstacleCache=floorOffsets.flatMap(floor=>{
+        const result=[];
+        for(const [side,wx]of [[0,.28],[1,1.88]]){
+          result.push({kind:'rack',side,min:[wx-.02,1.17+floor,.005],max:[wx+.85,1.225+floor,.75]});
+          for(const xx of [wx,wx+.83]){
+            result.push({kind:'rack',side,min:[xx-.04,1.15+floor,0],max:[xx+.04,1.25+floor,.06]});
+          }
+        }
+        if(a>0)result.push({kind:'unit',side:0,min:[0,.715+deviceLift+floor,1.05],max:[a,windowTop+floor,1.61]},{kind:'unit',side:1,min:[3-a,.715+deviceLift+floor,1.05],max:[3,windowTop+floor,1.61]});
+        return result.map(o=>({...o,floor}));
+      });
+      return obstacleCache;
+    }
+    function segmentBox(a,b,pad){return {min:a.map((v,i)=>Math.min(v,b[i])-pad),max:a.map((v,i)=>Math.max(v,b[i])+pad)};}
+    function frameBoxes(x,z,h,m){
+      return [.24,1.36].flatMap(dx=>[.17,.58].map(dz=>({min:[x+dx-.16,.12+h,z+dz-.16],max:[x+dx+.16,.445+h,z+dz+.16]})));
+    }
+    function boxDistance(a,b){
+      const dx=Math.max(0,a.min[0]-b.max[0],b.min[0]-a.max[0]);
+      const dy=Math.max(0,a.min[1]-b.max[1],b.min[1]-a.max[1]);
+      const dz=Math.max(0,a.min[2]-b.max[2],b.min[2]-a.max[2]);
+      return Math.sqrt(dx*dx+dy*dy+dz*dz);
+    }
+    function occupiedBoxes(x,z,h){
+      // The basket does not occupy the empty space beside and in front of workers' heads.
+      const boxes=[{part:'船身',min:[x,.445+h,z],max:[x+1.6,1.58+h,z+.75]}];
+      for(const dx of [.15,1.45])boxes.push({part:'提升架',min:[x+dx-.08,1.29+h,z+.285],max:[x+dx+.08,1.79+h,z+.465]});
+      const offsets=Number(people.value)===2?[.48,1.12]:[.80];
+      for(const dx of offsets){
+        const px=x+dx,pz=z+.43;
+        boxes.push(
+          {part:'人員腿部',min:[px-.135,.53+h,pz-.115],max:[px+.135,1.427+h,pz+.085]},
+          {part:'人員軀幹',min:[px-.234,1.35+h,pz-.134],max:[px+.234,1.90+h,pz+.09]},
+          {part:'人員頭部',min:[px-.125,1.89+h,pz-.12],max:[px+.125,2.255+h,pz+.12]}
+        );
+      }
+      return boxes;
+    }
+    function closestOccupied(boxes,obstacles){
+      let best={distance:Infinity};
+      for(const body of boxes)for(const obstacle of obstacles){
+        const distance=boxDistance(body,obstacle);
+        if(distance<best.distance)best={distance,body,obstacle,part:body.part,floor:obstacle.floor};
+      }
+      return best;
+    }
+    function nearestPair(a,b){
+      const from=[],to=[];
+      for(let i=0;i<3;i++){
+        if(a.max[i]<b.min[i]){from.push(a.max[i]);to.push(b.min[i]);}
+        else if(b.max[i]<a.min[i]){from.push(a.min[i]);to.push(b.max[i]);}
+        else{const mid=(Math.max(a.min[i],b.min[i])+Math.min(a.max[i],b.max[i]))/2;from.push(mid);to.push(mid);}
+      }
+      return {from,to,distance:boxDistance(a,b)};
+    }
+    function nearbyDimensions(x=Number(sx.value)/1000,z=1.2-Number(sz.value)/1000,h=verticalOffset){
+      const occupied=occupiedBoxes(x,z,h),y=.9+h;
+      const dims=[
+        {name:'左牆',from:[x,y,z+.375],to:[0,y,z+.375],distance:x},
+        {name:'右牆',from:[x+1.6,y,z+.375],to:[3,y,z+.375],distance:3-x-1.6},
+        {name:'前牆',from:[x+.8,y,z],to:[x+.8,y,0],distance:z}
+      ];
+      for(const kind of ['rack','unit']){
+        const boxes=obstacleBoxes().filter(o=>o.kind===kind);
+        for(let i=0;i<2;i++){
+          const hit=closestOccupied(occupied,boxes.filter(o=>o.side===i));
+          const nearest=hit.body?{...nearestPair(hit.body,hit.obstacle),floor:hit.floor,part:hit.part}:null;
+          dims.push({name:(nearest?floorName(nearest.floor):'')+(i===0?'左':'右')+(kind==='rack'?'晾架':'設備')+(hit.part?.startsWith('人員')?'·人':''),...(nearest||{distance:Infinity}),limit:kind==='rack'?.15:.3});
+        }
+      }
+      const pipe=closestOccupied(occupied,pipeBoxes());
+      dims.push({name:'最近喉管',...nearestPair(pipe.body,pipe.obstacle)});
+      return dims;
+    }
+    function branchPaths(){
+      // Both elbows lie in plan: around the facade corner, then into the side wall.
+      return [-1,1].map(sign=>{
+        const corner=sign<0?.16:2.84,r=.075,y=1.055,startX=corner-sign*r;
+        const points=[[1.5,y,.16],[startX,y,.16]];
+        for(let j=1;j<=10;j++){
+          const a=j*Math.PI/20;
+          points.push([startX+sign*r*Math.sin(a),y,.16+r*(1-Math.cos(a))]);
+        }
+        points.push([corner,y,.60]);
+        for(let j=1;j<=10;j++){
+          const a=j*Math.PI/20;
+          points.push([corner+sign*r*(1-Math.cos(a)),y,.60+r*Math.sin(a)]);
+        }
+        points.push([sign<0?-.015:3.015,y,.675]);
+        return {sign,points};
+      });
+    }
+    let sitePipeCache;
+    function pipeBoxes(){
+      // Straight runs and conservative elbow envelopes share the rendered path.
+      if(!sitePipeCache)sitePipeCache=[
+        {min:[1.445,facadeBottom,.025],max:[1.555,facadeTop,.215]},
+        ...floorOffsets.flatMap(floor=>branchPaths().flatMap(({points})=>
+          [[0,1],[1,11],[11,12],[12,22],[22,23]].map(([start,end])=>{
+            const pts=points.slice(start,end+1);
+            return {min:[0,1,2].map(i=>Math.min(...pts.map(p=>p[i]))-.03+(i===1?floor:0)),max:[0,1,2].map(i=>Math.max(...pts.map(p=>p[i]))+.03+(i===1?floor:0))};
+          })
+        ))
+      ];
+      return sitePipeCache;
+    }
+    function segmentHits(a,b,box,pad=.015){
+      let lo=0,hi=1;
+      for(let i=0;i<3;i++){
+        const d=b[i]-a[i],mn=box.min[i]-pad,mx=box.max[i]+pad;
+        if(Math.abs(d)<1e-9){if(a[i]<mn||a[i]>mx)return false;continue;}
+        let t1=(mn-a[i])/d,t2=(mx-a[i])/d;if(t1>t2)[t1,t2]=[t2,t1];
+        lo=Math.max(lo,t1);hi=Math.min(hi,t2);if(lo>hi)return false;
+      }
+      return true;
+    }
+    function spatialState(x=Number(sx.value)/1000,z=1.2-Number(sz.value)/1000,h=verticalOffset){
+      const obs=obstacleBoxes(),m=mechanism(),e=clothExtension();
+      const occupied=occupiedBoxes(x,z,h);
+      const cloth={min:[x-e,.69+h,z-e],max:[x+1.6+e,1.15+h,z+.75+e]};
+      const frames=frameBoxes(x,z,h,m);
+      const cables=[];
+      for(const [ax,bx]of [[.85,x+.15],[2.15,x+1.45]]){
+        cables.push([[ax,anchorHeight,1.575],[bx,1.76+h,z+.375]]);
+        cables.push([[ax+.045,anchorHeight,1.575],[bx+.035,1.33+h,z+.375]]);
+      }
+      const acObs=obs.filter(o=>o.kind==='unit'),rackObs=obs.filter(o=>o.kind==='rack');
+      const acNearest=closestOccupied(occupied,acObs),rackNearest=closestOccupied(occupied,rackObs);
+      const acDistance=acNearest.distance,rackDistance=rackNearest.distance;
+      const clothHit=obs.some(o=>boxDistance(cloth,o)<.005);
+      const frameHit=obs.some(o=>frames.some(frame=>boxDistance(frame,o)<.005));
+      const cableHit=obs.some(o=>cables.some(([a,b])=>segmentHits(a,b,o)));
+      const pipeHit=pipeBoxes().some(o=>[...occupied,cloth,...frames].some(b=>boxDistance(b,o)<.005)||cables.some(([a,b])=>segmentHits(a,b,o)));
+      const wallHit=x-e<0||x+1.6+e>3||z-e<.005||z<.3-1e-8;
+      return {acDistance,rackDistance,acNearest,rackNearest,clothHit,frameHit,cableHit,pipeHit,wallHit,clear:acDistance>=.3-1e-8&&rackDistance>=.15-1e-8&&!clothHit&&!frameHit&&!cableHit&&!pipeHit&&!wallHit};
+    }
+    function clothExtension(){const a=Number(fold.value)/100*Math.PI/2;return Number(extent.value)/1000*Math.sin(a)+.02*Math.cos(a);}
+    function catchCloth(x,z){
+      // Existing foldable catch cloth, illustrated independently of the proposed positioning frame.
+      // Its dimensions, hinge height and folding kinematics are assumptions, not a measured replica.
+      const t=Number(fold.value)/100,e=clothExtension(),iy=.83,oy=iy+.30*Math.cos(t*Math.PI/2)+.10*Math.sin(t*Math.PI/2);
+      const inner=[[x,iy,z],[x+1.6,iy,z],[x+1.6,iy,z+.75],[x,iy,z+.75]];
+      const outer=[[x-e,oy,z-e],[x+1.6+e,oy,z-e],[x+1.6+e,oy,z+.75+e],[x-e,oy,z+.75+e]];
+      const lerp=(a,b,t)=>a.map((n,i)=>n+(b[i]-n)*t);
+      for(let side=0;side<4;side++){
+        const next=(side+1)%4,n=side%2===0?12:6;
+        for(let j=0;j<n;j++){
+          const u=j/n,v=(j+1)/n;
+          const a=lerp(inner[side],inner[next],u),b=lerp(inner[side],inner[next],v);
+          const c=lerp(outer[side],outer[next],u),d=lerp(outer[side],outer[next],v);
+          const m=lerp(a,c,.5),q=lerp(b,d,.5);
+          m[1]-=.065*t+(j%2)*.012;q[1]-=.065*t+((j+1)%2)*.012;
+          shape([a,b,q,m],shade(palette.cloth,j%2?.91:1.05),null);
+          shape([m,q,d,c],shade(palette.cloth,j%2?1.03:.88),null);
+          if(j%3===0)rod(a,c,palette.fg,.006);
+        }
+        rod(outer[side],outer[next],palette.cloth,.012);
+        rod(inner[side],outer[side],palette.fg,.009);
+        sphere(inner[side],.024,palette.fg);
+      }
+    }
+    function model(){
+      shapes=[];drawOffset=0;drawLayer=0;const x=Number(sx.value)/1000,z=1.20-Number(sz.value)/1000;
+      const m=mechanism(),front=.75+.50*m.tz,rear=2.15-.25*m.tz,left=.10+.68*m.tx,right=2.90-.68*m.tx;
+      // Existing facade is contextual geometry, not an approved load-bearing surface.
+      if(wall.checked){
+        drawLayer=-1;
+        box(-.12,facadeBottom,-.15,3.24,facadeTop-facadeBottom,.15,palette.muted,.75);
+        for(let a=0;a<=3.01;a+=.15)line([a,facadeBottom,.005],[a,facadeTop,.005],palette.border,.55,.65);
+        for(let a=facadeBottom;a<facadeTop;a+=.15)line([0,a,.005],[3,a,.005],palette.border,.55,.65);
+        for(const floor of [...floorOffsets,facadeTop])line([0,floor,.01],[3,floor,.01],palette.fg,1,.55);
+        for(const side of [0,3]){
+          shape([[side,facadeBottom,0],[side,facadeTop,0],[side,facadeTop,2.35],[side,facadeBottom,2.35]],palette.muted,null,1,.10);
+          line([side,facadeBottom,0],[side,facadeTop,0],palette.border,1);
+          line([side,facadeBottom,2.35],[side,facadeTop,2.35],palette.border,1,.6);
+        }
+        drawLayer=0;
+        for(const floor of floorOffsets)for(const wx of [.28,1.88]){
+          drawOffset=floor;
+          box(wx,windowBottom,.016,.83,windowHeight,.04,palette.border,.48);
+          // Photo reference: a horizontal projecting rectangle, not a vertical grille/cage.
+          for(const xx of [wx,wx+.83]){
+            rod([xx,1.2,.025],[xx,1.2,.735],palette.fg,.015);
+            box(xx-.035,1.155,.008,.07,.09,.045,palette.border);
+          }
+          for(const zz of [.09,.735])rod([wx,1.2,zz],[wx+.83,1.2,zz],palette.fg,.015);
+          for(let j=1;j<=5;j++){
+            const xx=wx+j*.83/6;
+            line([xx,1.20,.09],[xx,1.19,.41],palette.fg,1,.8);
+            line([xx,1.19,.41],[xx,1.20,.735],palette.fg,1,.8);
+          }
+        }
+      }
+      // Service pipe: contextual only, not used as an anchor.
+      drawOffset=0;
+      for(let y=facadeBottom;y<facadeTop;y+=.30)rod([1.5,y,.16],[1.5,Math.min(y+.30,facadeTop),.16],palette.fg,.032);
+      for(const floor of floorOffsets){
+      drawOffset=floor;
+      for(const y of [.15,1.0,2.5])box(1.445,y,.04,.11,.04,.15,palette.border);
+      box(1.445,1.89,.11,.11,.13,.10,palette.fg);
+      // Branches run to both facade corners, along the side walls, then turn into them.
+      rod([1.445,1.055,.16],[1.555,1.055,.16],palette.fg,.038);
+      for(const {sign,points} of branchPaths()){
+        for(let i=1;i<points.length;i++)rod(points[i-1],points[i],palette.fg,.022);
+        const joint=sign<0?.68:2.32;
+        rod([joint-.022,1.055,.16],[joint+.022,1.055,.16],palette.fg,.029);
+        box(joint-.04,1.025,.025,.08,.06,.11,palette.border);
+      }
+      }
+      // Air conditioner envelope: inward width is adjustable; height and depth remain illustrative.
+      const acWidth=Number(ac.value)/1000;
+      if(acWidth>0){
+        for(const floor of floorOffsets)for(const ax of [0,3-acWidth]){
+          drawOffset=floor+deviceLift;
+          box(ax,.78,1.05,acWidth,deviceHeight,.52,palette.border);
+          box(ax+.015,.80,1.575,Math.max(.01,acWidth-.03),.44,.012,palette.muted);
+          const radius=Math.min(.16,acWidth*.36),cx=ax+acWidth/2,cy=1.02;
+          const ring=Array.from({length:25},(_,j)=>[cx+Math.cos(j*Math.PI/12)*radius,cy+Math.sin(j*Math.PI/12)*radius,1.592]);
+          shape(ring,null,palette.fg,1,.8);
+          for(let j=-2;j<=2;j++)line([cx-radius*.82,cy+j*radius*.30,1.595],[cx+radius*.82,cy+j*radius*.30,1.595],palette.fg,.8,.7);
+          for(const zz of [1.12,1.49])box(ax,.715,zz,acWidth,.04,.055,palette.fg);
+        }
+      }
+      drawOffset=verticalOffset;
+      thrusterGeometry(x,z);
+      // Suspended basket. Width is 1600 mm; depth/height are illustrative.
+      box(x,.445,z,1.6,.085,.75,palette.boat);
+      box(x,.53,z,1.6,.17,.025,palette.boat);
+      box(x,.53,z+.725,1.6,.17,.025,palette.boat);
+      box(x,.53,z,.025,.17,.75,palette.boat);
+      box(x+1.575,.53,z,.025,.17,.75,palette.boat);
+      for(const xx of [x,x+.8,x+1.6])for(const zz of [z,z+.75])rod([xx,.52,zz],[xx,1.55,zz],palette.boat,.018);
+      for(const yy of [1.03,1.55]){
+        for(const zz of [z,z+.75])rod([x,yy,zz],[x+1.6,yy,zz],palette.boat,.019);
+        for(const xx of [x,x+1.6])rod([xx,yy,z],[xx,yy,z+.75],palette.boat,.019);
+      }
+      for(const xx of [x+.15,x+1.45]){
+        rod([xx,.50,z+.375],[xx,1.76,z+.375],palette.boat,.029);
+        box(xx-.08,1.29,z+.285,.16,.22,.18,palette.fg);
+      }
+      catchCloth(x,z);
+      // Roof anchors stay at the same coordinates. Cable upper lengths are schematic.
+      drawOffset=0;
+      for(const pair of [[.85,x+.15],[2.15,x+1.45]]){
+        const [ax,bx]=pair;
+        box(ax-.11,anchorHeight+.02,1.495,.22,.055,.16,palette.fg);
+        sphere([ax,anchorHeight,1.575],.025,palette.fg);
+        line([ax,anchorHeight,1.575],[bx,1.76+verticalOffset,z+.375],palette.fg,2);
+        line([ax+.045,anchorHeight,1.575],[bx+.035,1.33+verticalOffset,z+.375],palette.fg,1, .7,[4,3]);
+      }
+      // Both occupancy states stay inside the guardrails and move with the basket.
+      drawOffset=verticalOffset;
+      const workerOffsets=Number(people.value)===2?[.48,1.12]:[.80];
+      drawingWorker=true;
+      for(const offset of workerOffsets)worker(x+offset,z+.43);
+      drawingWorker=false;
+      drawOffset=0;
+      return {x,z,m,front,rear,left,right,acWidth};
+    }
+    function fit(){
+      const v=verticalView(),bounds=[];for(const x of [-.25,3.25])for(const y of [v.lo,v.hi])for(const z of [-.15,2.55])bounds.push(camera([x,y,z]));
+      const maxX=Math.max(...bounds.map(p=>Math.abs(p[0]))),maxY=Math.max(...bounds.map(p=>Math.abs(p[1])));
+      scale=Math.min((width-30)/(2*maxX),(height-75)/(2*maxY))*zoom;
+    }
+    function deckOcclusionPath(){
+      // Looking up: the opaque deck and four toe boards form a closed underside.
+      // Their silhouette occludes workers independently of average face-depth ordering.
+      if(pitch>=0)return null;
+      const x=Number(sx.value)/1000,z=1.2-Number(sz.value)/1000,points=[];
+      for(const xx of [x,x+1.6])for(const yy of [.445,.70])for(const zz of [z,z+.75])points.push(project([xx,yy+verticalOffset,zz]).slice(0,2));
+      points.sort((a,b)=>a[0]-b[0]||a[1]-b[1]);
+      const cross=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);
+      const half=pts=>{const h=[];for(const p of pts){while(h.length>=2&&cross(h[h.length-2],h[h.length-1],p)<=0)h.pop();h.push(p);}return h;};
+      const lo=half(points),hi=half([...points].reverse());
+      const hull=[...lo.slice(0,-1),...hi.slice(0,-1)],path=new Path2D();
+      path.rect(-1,-1,width+2,height+2);
+      hull.forEach((p,i)=>i?path.lineTo(p[0],p[1]):path.moveTo(p[0],p[1]));path.closePath();
+      return path;
+    }
+    function paint(){
+      ctx.clearRect(0,0,width,height);
+      ctx.save();ctx.beginPath();ctx.rect(0,27,width,height-54);ctx.clip();
+      const workerClip=deckOcclusionPath();
+      shapes.sort((a,b)=>a.layer-b.layer||a.d-b.d);
+      for(const s of shapes){
+        const clipped=s.worker&&workerClip;
+        if(clipped){ctx.save();ctx.clip(workerClip,'evenodd');}
+        if(s.sphere){const p=project(s.p);ctx.globalAlpha=1;ctx.beginPath();ctx.arc(p[0],p[1],s.r*scale,0,Math.PI*2);ctx.fillStyle=s.c;ctx.fill();if(clipped)ctx.restore();continue;}
+        ctx.globalAlpha=s.alpha;ctx.beginPath();
+        s.points.forEach((p,i)=>{const q=project(p);i?ctx.lineTo(q[0],q[1]):ctx.moveTo(q[0],q[1]);});
+        if(s.points.length>2)ctx.closePath();
+        if(s.fill){ctx.fillStyle=s.fill;ctx.fill();}
+        if(s.stroke){ctx.strokeStyle=s.stroke;ctx.lineWidth=s.lineWidth;ctx.setLineDash(s.dash);ctx.stroke();}
+        if(clipped)ctx.restore();
+      }
+      ctx.globalAlpha=1;ctx.setLineDash([]);ctx.restore();
+    }
+    function label(str,x,y,align='center'){
+      ctx.font='12px '+getComputedStyle(root).fontFamily;
+      const tw=ctx.measureText(str).width;
+      let xx=x;if(align==='center')xx=x-tw/2;if(align==='right')xx=x-tw;
+      xx=Math.max(5,Math.min(width-tw-5,xx));
+      ctx.fillStyle=palette.bg;ctx.globalAlpha=.9;ctx.fillRect(xx-3,y-12,tw+6,18);ctx.globalAlpha=1;ctx.fillStyle=palette.fg;ctx.textAlign='left';ctx.fillText(str,xx,y);
+    }
+    function labels(state){
+      const floorLabels=[];
+      label('↑ 吊纜通往固定天台吊點（高度示意）',width/2,20);
+      label('拖曳旋轉 · 滾輪縮放',width/2,height-8);
+      for(const floor of floorOffsets){
+        const p=project([0,floor+2.75,0]);
+        if(p[1]>42&&p[1]<height-30){
+          const text=floorName(floor),w=ctx.measureText(text).width;
+          const x=Math.max(5,Math.min(width-w-5,p[0]-w));
+          const r={x:x-3,y:p[1]-12,w:w+6,h:18};
+          if(floorLabels.every(q=>r.x>=q.x+q.w||r.x+r.w<=q.x||r.y>=q.y+q.h||r.y+r.h<=q.y)){
+            label(text,p[0],p[1],'right');floorLabels.push(r);
+          }
+        }
+      }
+      if(!showDistances)return;
+      const dims=nearbyDimensions(state.x,state.z),placed=[];
+      ctx.font='12px '+getComputedStyle(root).fontFamily;
+      const texts=dims.map(d=>`${d.name} ${Number.isFinite(d.distance)?Math.round(d.distance*1000)+' mm':'—'}${d.distance<(d.limit||0)-1e-8?' !':''}`);
+      // Screen-space labels remain visible at every height/view, including narrow canvases.
+      dims.forEach((d,i)=>{
+        const a=d.from?project(d.from):[width/2,height/2],b=d.to?project(d.to):a;
+        const mid=[(a[0]+b[0])/2,(a[1]+b[1])/2],w=ctx.measureText(texts[i]).width+10;
+        const candidates=[];
+        for(const radius of [20,44,70,100,140,190,250])for(const [dx,dy]of [[0,-1],[0,1],[-1,0],[1,0],[-1,-1],[1,1],[-1,1],[1,-1]])candidates.push([mid[0]+dx*radius-w/2,mid[1]+dy*radius-10]);
+        for(let yy=32;yy<height-45;yy+=24)for(let xx=5;xx<width-w;xx+=Math.max(20,w/2))candidates.push([xx,yy]);
+        const rects=candidates.map(([x,y])=>({x:Math.max(5,Math.min(width-w-5,x)),y:Math.max(32,Math.min(height-48,y)),w,h:20}));
+        const overlaps=(r,p)=>r.x<p.x+p.w+5&&r.x+r.w+5>p.x&&r.y<p.y+p.h+4&&r.y+r.h+4>p.y;
+        const box=rects.find(r=>[...placed,...floorLabels].every(p=>!overlaps(r,p)))||rects[0];
+        placed.push({...box,text:texts[i],a,b,mid,hasLine:!!d.from});
+      });
+      ctx.save();ctx.beginPath();ctx.rect(0,29,width,height-56);ctx.clip();
+      ctx.strokeStyle=palette.fg;ctx.lineWidth=1;
+      for(const p of placed){
+        if(!p.hasLine)continue;
+        ctx.globalAlpha=.65;ctx.setLineDash([]);ctx.beginPath();ctx.moveTo(...p.a.slice(0,2));ctx.lineTo(...p.b.slice(0,2));ctx.stroke();
+        for(const q of [p.a,p.b]){ctx.beginPath();ctx.arc(q[0],q[1],2,0,Math.PI*2);ctx.stroke();}
+        ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(...p.mid);ctx.lineTo(p.x+p.w/2,p.y+p.h/2);ctx.stroke();
+      }
+      ctx.setLineDash([]);ctx.globalAlpha=1;
+      for(const p of placed){ctx.fillStyle=palette.bg;ctx.fillRect(p.x,p.y,p.w,p.h);ctx.fillStyle=palette.fg;ctx.textAlign='left';ctx.fillText(p.text,p.x+5,p.y+14);}
+      ctx.restore();
+      root.querySelector('#g3-distance-summary').textContent=texts.join(' · ');
+    }
+    function render(){fit();const state=model();paint();labels(state);}
+
+function forceDemand(){
+  const mass=Number($('#b-mass').value),H=anchorHeight-(1.76+verticalOffset);
+  const dx=Number(sx.value)/1000-.7,dz=-Number(sz.value)/1000;
+  // Ideal symmetric main cables; both lower attachments have identical translation.
+  const fx=mass*9.81*dx/H,fz=mass*9.81*dz/H;
+  return {mass,H,dx,dz,fx,fz,total:Math.hypot(fx,fz)};
+}
+function thrusterGeometry(x,z){
+  const f=forceDemand(),angle=f.total>1?Math.atan2(f.dz,f.dx):Math.PI/2;
+  const direction=[Math.cos(angle),0,Math.sin(angle)],across=[-direction[2],0,direction[0]];
+  for(const dx of [.24,1.36])for(const dz of [.17,.58]){
+    const c=[x+dx,.26,z+dz],rings=[];
+    for(const s of [-1,1])rings.push(Array.from({length:25},(_,j)=>{
+      const a=j*Math.PI/12;
+      return [c[0]+s*.105*direction[0]+.115*Math.cos(a)*across[0],c[1]+.115*Math.sin(a),c[2]+s*.105*direction[2]+.115*Math.cos(a)*across[2]];
+    }));
+    for(let i=1;i<25;i++)shape([rings[0][i-1],rings[0][i],rings[1][i],rings[1][i-1]],palette.frame,null);
+    for(const ring of rings){shape(ring,null,palette.fg,1);for(let j=0;j<12;j+=3)line(ring[j],ring[j+12],palette.fg,1);}
+    rod([c[0],.40,c[2]],[c[0],.445,c[2]],palette.frame,.022);
+  }
+  if(f.total>1){
+    const a=[x+.8,.12,z+.375],b=[a[0]+direction[0]*.55,a[1],a[2]+direction[2]*.55];
+    rod(a,b,palette.slide,.018);
+    for(const side of [-1,1])rod(b,[b[0]-.14*direction[0]+side*.09*across[0],b[1],b[2]-.14*direction[2]+side*.09*across[2]],palette.slide,.018);
+  }
+}
+let motion=null,raf=0,paused=false,lastTime=0,notice='';
+const pose=()=>({x:Number(sx.value),z:Number(sz.value),h:verticalOffset,f:Number(fold.value)});
+function assign(p){sx.value=String(p.x);sz.value=String(p.z);verticalOffset=p.h;fold.value=String(p.f);}
+function poseClear(p){const saved=fold.value;fold.value=String(p.f);const s=spatialState(p.x/1000,1.2-p.z/1000,p.h);fold.value=saved;return s.clear;}
+function same(a,b){return Math.abs(a.x-b.x)<.01&&Math.abs(a.z-b.z)<.01&&Math.abs(a.h-b.h)<.00001&&Math.abs(a.f-b.f)<.01;}
+function interpolate(a,b,t){return {x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t,h:a.h+(b.h-a.h)*t,f:a.f+(b.f-a.f)*t};}
+function planTo(goal){
+  cancelAnimationFrame(raf);motion=null;paused=false;
+  const start=pose(),waypoints=[start];
+  if(Math.abs(goal.h-start.h)>.001){
+    waypoints.push({...start,z:0},{...start,z:0,x:700},{...start,z:0,x:700,f:0},
+      {x:700,z:0,h:goal.h,f:0},{x:700,z:0,h:goal.h,f:100},goal);
+  }else if(goal.z===0&&goal.x===700){waypoints.push({...start,z:0},goal);}
+  else waypoints.push(goal);
+  const path=waypoints.filter((p,i)=>i===0||!same(p,waypoints[i-1]));
+  // Validate a swept sampled path; never jump directly to a disconnected clear position.
+  for(let i=1;i<path.length;i++){
+    const a=path[i-1],b=path[i],n=Math.ceil(Math.max(Math.abs(a.x-b.x)/5,Math.abs(a.z-b.z)/5,Math.abs(a.h-b.h)*1000/5,Math.abs(a.f-b.f)))||1;
+    for(let j=0;j<=n;j++)if(!poseClear(interpolate(a,b,j/n))){notice='目標或途經位置不符合間隙條件；目前位置保留。';syncTargets();update();return;}
+  }
+  if(path.length<2){notice='已在目標位置。';update();return;}
+  motion={path,segment:0,elapsed:0,duration:path.length>2?5000:8000};notice='幾何路徑演示中；所需推力不代表設備能提供。';lastTime=performance.now();update();raf=requestAnimationFrame(tick);
+}
+function tick(now){
+  if(!motion||paused)return;
+  motion.elapsed+=Math.min(now-lastTime,100);lastTime=now;
+  const t=Math.min(1,motion.elapsed/motion.duration),{path,segment}=motion;
+  assign(interpolate(path[segment],path[segment+1],ease(t)));
+  if(t>=1){motion.segment++;motion.elapsed=0;if(motion.segment>=path.length-1){motion=null;notice='已到達幾何目標；持續推力及姿態控制仍待驗證。';}}
+  update();if(motion)raf=requestAnimationFrame(tick);
+}
+function syncTargets(){
+  $('#b-x').value=String(Math.round(Number(sx.value)));$('#b-z').value=String(Math.round(Number(sz.value)));$('#b-height').value=String(Math.round(verticalOffset*1000));targetReadouts();
+}
+function targetReadouts(){for(const name of ['x','z','height'])$('#b-'+name+'-target').textContent=$('#b-'+name).value;}
+function requested(){return {x:Number($('#b-x').value),z:Number($('#b-z').value),h:Number($('#b-height').value)/1000,f:100};}
+function update(){
+  const s=spatialState(),f=forceDemand();
+  $('#b-status').textContent=`目前高度 ${Math.round(verticalOffset*1000)} mm · 距左牆 ${Math.round(Number(sx.value))} mm · 移近 ${Math.round(Number(sz.value))} mm · 帆布展開 ${Math.round(Number(fold.value))}%。${notice}`;
+  $('#b-force').textContent=Number.isFinite(f.mass)&&f.mass>=100&&f.mass<=2000?`理想無風靜態需求：水平合推力 ${Math.round(f.total)} N（左右 ${Math.round(f.fx)} N／前後 ${Math.round(f.fz)} N）；吊點至主繩下端垂直距離 ${f.H.toFixed(2)} m。未含風力、加速、力矩及餘量。`:'請輸入 100–2000 kg 的質量假設；不代表容許載重。';
+  $('#b-clearance').textContent=`${s.clear?'此位置通過簡化幾何條件':'此位置不符合簡化幾何條件'} · 晾架 ${Math.round(s.rackDistance*1000)} mm · 設備 ${Number.isFinite(s.acDistance)?Math.round(s.acDistance*1000)+' mm':'無'} · ${s.clothHit||s.frameHit||s.cableHit||s.pipeHit||s.wallHit?'外廓有干涉':'帆布／模組／吊纜／喉管未見干涉'}。`;
+  $('#b-clearance').classList.toggle('text-destructive',!s.clear);
+  $('#b-pause').disabled=!motion;$('#b-skip').disabled=!motion;$('#b-pause').textContent=paused?'繼續動畫':'暫停動畫';
+  for(const id of ['b-x','b-z','b-height','b-upper','b-lower','b-return','g3-ac','g3-extent','g3-people'])$('#'+id).disabled=!!motion;
+  $('#b-ac-value').textContent=ac.value;$('#b-extent-value').textContent=extent.value;
+  render();
+}
+for(const name of ['x','z','height']){const control=$('#b-'+name);control.addEventListener('input',targetReadouts);control.addEventListener('change',()=>planTo(requested()));}
+for(const [id,h]of [['b-upper',2.2],['b-lower',-.8]])$('#'+id).addEventListener('click',()=>{$('#b-height').value=String(h*1000);$('#b-x').value='700';$('#b-z').value='0';targetReadouts();planTo(requested());});
+$('#b-return').addEventListener('click',()=>{$('#b-x').value='700';$('#b-z').value='0';$('#b-height').value=String(Math.round(verticalOffset*1000));targetReadouts();planTo(requested());});
+$('#b-pause').addEventListener('click',()=>{paused=!paused;if(!paused){lastTime=performance.now();raf=requestAnimationFrame(tick);}else cancelAnimationFrame(raf);update();});
+$('#b-skip').addEventListener('click',()=>{if(!motion)return;assign(motion.path.at(-1));motion=null;paused=false;cancelAnimationFrame(raf);notice='已完成通過幾何檢查的路徑；動力與失效控制未驗證。';update();});
+for(const e of [ac,extent,people]){
+  let previous=e.value;
+  e.addEventListener(e===people?'change':'input',()=>{if(!poseClear(pose())){e.value=previous;notice='新外廓與目前位置不相容；請先退回或選另一高度。';}else{previous=e.value;notice='尺寸／人數已更新；總質量假設請另行調整。';}update();});
+}
+$('#b-mass').addEventListener('input',update);
+$('#g3-distance-toggle').addEventListener('click',()=>{showDistances=!showDistances;$('#g3-distance-toggle').textContent=showDistances?'尺寸顯示：開':'尺寸顯示：關';$('#g3-distance-toggle').setAttribute('aria-pressed',String(showDistances));$('#g3-distance-summary').hidden=!showDistances;render();});
+themeToggle.addEventListener('click',()=>{chosenTheme=root.dataset.g3Theme!=='dark';applyTheme(chosenTheme);colors();render();});
+systemTheme.addEventListener('change',e=>{if(chosenTheme===null){applyTheme(e.matches);colors();render();}});
+wall.addEventListener('change',render);
+view.addEventListener('change',()=>{[yaw,pitch]={iso:[.47,.34],under:[.47,-.48],front:[0,.05],top:[0,Math.PI/2],side:[Math.PI/2,.18]}[view.value];zoom=1;render();});
+canvas.addEventListener('pointerdown',e=>{drag={x:e.clientX,y:e.clientY};canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;yaw-=(e.clientX-drag.x)*.008;pitch=Math.max(-.65,Math.min(Math.PI/2,pitch+(e.clientY-drag.y)*.008));drag={x:e.clientX,y:e.clientY};render();});
+for(const name of ['pointerup','pointercancel'])canvas.addEventListener(name,()=>{drag=null;});
+canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(.7,Math.min(1.6,zoom*Math.exp(-e.deltaY*.001)));render();},{passive:false});
+function resize(){width=Math.max(280,$('#g3-stage').getBoundingClientRect().width);height=width<430?560:700;const dpr=Math.min(window.devicePixelRatio||1,2);canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);canvas.style.height=height+'px';ctx.setTransform(dpr,0,0,dpr,0,0);colors();render();}
+new ResizeObserver(resize).observe($('#g3-stage'));
+new MutationObserver(()=>{colors();render();}).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&motion){paused=true;cancelAnimationFrame(raf);update();}});
+applyTheme(systemTheme.matches);resize();syncTargets();update();
+
+})();
+  </script>
+</div>
+
+</body>
+</html>

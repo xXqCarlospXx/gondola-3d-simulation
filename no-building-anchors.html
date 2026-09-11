@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>方案 B — 無新增建築支點的吊船研究</title>
+<title>方案 C — 懸吊承托架與反向配重</title>
 <style>:root {
   color-scheme: light dark;
   background-color: var(
@@ -1024,46 +1024,46 @@ svg.lucide {
 html>body{padding:0}</style>
 </head>
 <body>
-<div id="gondola-air">
-  <div class="viz-row"><strong>方案 B · 無新增建築支點</strong><span class="text-small">水平推力定位研究 · 未驗證載人可行性</span></div>
+<div id="gondola-carrier">
+  <div class="viz-row"><strong>方案 C · 懸吊承托架＋反向配重</strong><span class="text-small">新增建築支點 0 個 · 機構與靜態重心概念</span></div>
   <div class="viz-row">
     <button type="button" class="btn" id="g3-theme-toggle" aria-label="深色模式" aria-pressed="false">深色模式：關</button>
     <button type="button" class="btn" id="g3-distance-toggle" aria-pressed="false">尺寸顯示：關</button>
     <label class="form-label">船上人數 <select class="form-select" id="g3-people"><option value="2">2 人</option><option value="1">1 人</option></select></label>
-    <label class="form-label">視角 <select class="form-select" id="g3-view"><option value="iso">斜角</option><option value="under">船底推力模組</option><option value="front">正面</option><option value="top">俯視</option><option value="side">側面</option></select></label>
+    <label class="form-label">視角 <select class="form-select" id="g3-view"><option value="iso">斜角</option><option value="under">船底支架及配重</option><option value="front">正面</option><option value="top">俯視</option><option value="side">側面</option></select></label>
     <label class="form-check"><input id="g3-wall" class="form-check-input" type="checkbox" checked><span class="form-check-label">外牆示意</span></label>
   </div>
   <div class="viz-controls">
     <label class="form-label"><span>目標高度 · <output id="b-height-target">0</output> mm</span><input id="b-height" class="form-range" type="range" min="-3000" max="3000" value="0" step="10" aria-label="目標高度，毫米"></label>
-    <label class="form-label"><span>目標左右位置 · 距左牆 <output id="b-x-target">700</output> mm</span><input id="b-x" class="form-range" type="range" min="300" max="1100" value="700" step="10" aria-label="目標距左牆位置，毫米"></label>
-    <label class="form-label"><span>目標向前移近 · <output id="b-z-target">0</output> mm</span><input id="b-z" class="form-range" type="range" min="0" max="900" value="0" step="10" aria-label="目標向前移近，毫米"></label>
+    <label class="form-label"><span>船身距左牆 · <output id="b-x-target">700</output> mm</span><input id="b-x" class="form-range" type="range" min="300" max="1100" value="700" step="10" aria-label="目標距左牆位置，毫米"></label>
+    <label class="form-label"><span>向前移近 · <output id="b-z-target">0</output> mm</span><input id="b-z" class="form-range" type="range" min="0" max="900" value="0" step="10" aria-label="目標向前移近，毫米"></label>
   </div>
   <div class="viz-row">
     <button type="button" class="btn" id="b-upper">層間 +2200 mm</button>
     <button type="button" class="btn" id="b-lower">層間 −800 mm</button>
-    <button type="button" class="btn" id="b-return">退回吊點正下方</button>
+    <button type="button" class="btn" id="b-return">工作船退回中位</button>
     <button type="button" class="btn" id="b-pause" disabled>暫停動畫</button>
     <button type="button" class="btn" id="b-skip" disabled>跳過動畫</button>
   </div>
-  <div class="text-small">慢速演示目標位置；升降先退回及收帆布。動畫不代表控制器或推力已足夠。</div>
+  <div class="text-small">移動工作船時，配重反向移動。升降前先退回中位、收帆布及橫軌；承托架隨吊纜一起升降。</div>
   <div id="b-status" class="text-small" aria-live="polite"></div>
   <div class="viz-controls">
-    <label class="form-label"><span>總懸吊質量假設 · kg（含人員及新裝置）</span><input id="b-mass" class="form-control" type="number" min="100" max="2000" step="10" value="600"></label>
-    <label class="form-label"><span>側面設備各向內佔位 · <output id="b-ac-value">400</output> mm</span><input id="g3-ac" class="form-range" type="range" min="0" max="600" step="10" value="400"></label>
-    <label class="form-label"><span>帆布每邊伸出 · <output id="b-extent-value">250</output> mm（未實測）</span><input id="g3-extent" class="form-range" type="range" min="100" max="500" step="10" value="250"></label>
+    <label class="form-label"><span>配重質量假設 · kg</span><input id="b-mass" class="form-control" type="number" min="200" max="800" step="10" value="300"></label>
+    <label class="form-label"><span>側面設備各向內佔位 · <output id="b-ac-value">400</output> mm</span><input id="g3-ac" class="form-range" type="range" min="0" max="600" step="10" value="400" aria-label="側面設備佔位，毫米"></label>
+    <label class="form-label"><span>帆布每邊伸出 · <output id="b-extent-value">250</output> mm（未實測）</span><input id="g3-extent" class="form-range" type="range" min="100" max="500" step="10" value="250" aria-label="帆布每邊伸出，毫米"></label>
   </div>
   <div id="b-force" class="text-small" aria-live="polite"></div>
-  <div id="g3-stage"><canvas id="g3-canvas" role="img" aria-label="無新增建築支點的吊船研究模型，保留固定天台吊纜，船底四個粉色水平推力模組；綠箭嘴表示所需推力方向，非已驗證性能。"></canvas></div>
-  <div class="viz-row text-small"><span>藍：吊船及安全帽</span><span>橙：原有接物帆布</span><span>粉：船載推力模組</span><span>綠箭嘴：所需合推力方向</span></div>
+  <div id="c-balance" class="text-small"></div>
+  <div id="g3-stage"><canvas id="g3-canvas" role="img" aria-label="固定天台吊纜懸吊粉色門形承托架；藍色工作船沿綠色雙軸滑台移動，下層灰色配重反向移動。不接觸外牆，合成重心保持在吊點下方的理想靜態演示。"></canvas></div>
+  <div class="viz-row text-small"><span>粉：懸吊承托架</span><span>綠：前後／左右滑台</span><span>灰：反向配重</span><span>藍：工作船</span><span>橙：原有接物帆布</span></div>
   <div id="g3-distance-summary" class="text-small" hidden></div>
   <div id="b-clearance" class="text-small" aria-live="polite"></div>
-  <div class="text-small">仍由原有天台吊點承重；新增建築支點 0 個。模組平面佔位 320 × 320 mm 為示意，並非能提供所需推力的設備尺寸。</div>
-  <div class="text-small">距晾架 ≥150 mm／設備 ≥300 mm 沿用既有模型條件；三層幾何、帆布、吊纜、推力模組及喉管納入簡化檢查。</div>
-  <div class="text-small">需持續推力抵抗吊纜回中力。斷電可擺回並撞向障礙物；冗餘供電與失效後避碰尚未解決，不能作載人施工依據。</div>
-  <div class="text-small">未計風力、噴流揚塵／掉石、近牆推力衰減、噪音、俯仰及轉向力矩。煤氣環境的點火風險及設備適用性須另行評估。</div>
+  <div class="text-small">受力路徑：工作船／配重 → 滑台 → 承托架 → 原有吊纜及固定天台吊點。需要重新配置提升機及獨立安全系統，不能夾在護欄上承重。</div>
+  <div class="text-small">配重只補償重心偏移；整套裝置仍可受風擺動。滑台鎖止不等於整船防擺，未驗證載人施工、抗風或斷電安全。</div>
+  <div class="text-small">承托架及配重外廓、兩人載重、導軌強度、吊點承載和失效保護均需實測及工程設計；圖示尺寸與質量是探索假設。</div>
   <style>
-        #gondola-air { color:var(--foreground); --g3-boat-color:light-dark(#3489d5,#72b7ef); --g3-frame-color:light-dark(#df72ac,#f19ac7); --g3-cloth-color:light-dark(#ed8b20,#ffad4b); }
-    #gondola-air[data-g3-theme] {
+        #gondola-carrier { color:var(--foreground); --g3-boat-color:light-dark(#3489d5,#72b7ef); --g3-frame-color:light-dark(#df72ac,#f19ac7); --g3-cloth-color:light-dark(#ed8b20,#ffad4b); }
+    #gondola-carrier[data-g3-theme] {
       background:var(--background);
       --background:light-dark(rgb(255 255 255),rgb(24 24 24));
       --foreground:light-dark(rgb(26 28 31),rgb(255 255 255));
@@ -1079,13 +1079,12 @@ html>body{padding:0}</style>
       --destructive:light-dark(rgb(226 85 7),rgb(255 133 73));
     }
 
-    #gondola-air #g3-stage { width:100%; }
-    #gondola-air #g3-canvas { display:block;width:100%;touch-action:none;cursor:grab; }
-    #gondola-air [hidden] { display:none !important; }
+    #gondola-carrier #g3-stage { width:100%; }
+    #gondola-carrier #g3-canvas { display:block;width:100%;touch-action:none;cursor:grab; }
+    #gondola-carrier [hidden] { display:none !important; }
   </style>
-  <script>
-    (()=>{
-const root=document.getElementById('gondola-air');
+  <script>(()=>{
+const root=document.getElementById('gondola-carrier');
 const $=s=>root.querySelector(s);
 const canvas=$('#g3-canvas'),ctx=canvas.getContext('2d');
 // Actual pose is separate from requested slider positions.
@@ -1112,7 +1111,7 @@ const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
     function color(name){colorCtx.clearRect(0,0,1,1);probe.style.color='var(--background)';colorCtx.fillStyle=getComputedStyle(probe).color;colorCtx.fillRect(0,0,1,1);probe.style.color=`var(${name})`;colorCtx.fillStyle=getComputedStyle(probe).color;colorCtx.fillRect(0,0,1,1);const p=colorCtx.getImageData(0,0,1,1).data;return `rgb(${p[0]},${p[1]},${p[2]})`;}
     function colors(){palette={fg:color('--foreground'),bg:color('--background'),muted:color('--muted'),border:color('--border'),boat:color('--g3-boat-color'),frame:color('--g3-frame-color'),slide:color('--viz-series-3'),cloth:color('--g3-cloth-color')};}
     function shade(c,f){const nums=c.match(/[\d.]+/g);if(!nums||nums.length<3)return c;return `rgb(${nums.slice(0,3).map(v=>Math.min(255,Math.round(Number(v)*f))).join(',')})`;}
-    function verticalView(){return {lo:facadeBottom,hi:facadeTop+.10};}
+    function verticalView(){return {lo:Math.min(facadeBottom,verticalOffset-.85),hi:Math.max(facadeTop+.10,anchorHeight+.15)};}
     function camera(p){const v=verticalView(),x=p[0]-1.5,y=p[1]-(v.lo+v.hi)/2,z=p[2]-1.0;const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);return [cy*x-sy*z,cp*y-sp*(sy*x+cy*z),sp*y+cp*(sy*x+cy*z)];}
     let scale=1;
     function project(p){const q=camera(p);return [width/2+q[0]*scale,height/2-q[1]*scale,q[2]];}
@@ -1179,8 +1178,8 @@ const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
       return obstacleCache;
     }
     function segmentBox(a,b,pad){return {min:a.map((v,i)=>Math.min(v,b[i])-pad),max:a.map((v,i)=>Math.max(v,b[i])+pad)};}
-    function frameBoxes(x,z,h,m){
-      return [.24,1.36].flatMap(dx=>[.17,.58].map(dz=>({min:[x+dx-.16,.12+h,z+dz-.16],max:[x+dx+.16,.445+h,z+dz+.16]})));
+    function frameBoxes(x,z,h){
+      return [...carrierParts(x,z,h),{min:[.35,.18+h,2.33],max:[2.65,2.62+h,2.39]}];
     }
     function boxDistance(a,b){
       const dx=Math.max(0,a.min[0]-b.max[0],b.min[0]-a.max[0]);
@@ -1191,7 +1190,7 @@ const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
     function occupiedBoxes(x,z,h){
       // The basket does not occupy the empty space beside and in front of workers' heads.
       const boxes=[{part:'船身',min:[x,.445+h,z],max:[x+1.6,1.58+h,z+.75]}];
-      for(const dx of [.15,1.45])boxes.push({part:'提升架',min:[x+dx-.08,1.29+h,z+.285],max:[x+dx+.08,1.79+h,z+.465]});
+
       const offsets=Number(people.value)===2?[.48,1.12]:[.80];
       for(const dx of offsets){
         const px=x+dx,pz=z+.43;
@@ -1281,26 +1280,7 @@ const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
       }
       return true;
     }
-    function spatialState(x=Number(sx.value)/1000,z=1.2-Number(sz.value)/1000,h=verticalOffset){
-      const obs=obstacleBoxes(),m=mechanism(),e=clothExtension();
-      const occupied=occupiedBoxes(x,z,h);
-      const cloth={min:[x-e,.69+h,z-e],max:[x+1.6+e,1.15+h,z+.75+e]};
-      const frames=frameBoxes(x,z,h,m);
-      const cables=[];
-      for(const [ax,bx]of [[.85,x+.15],[2.15,x+1.45]]){
-        cables.push([[ax,anchorHeight,1.575],[bx,1.76+h,z+.375]]);
-        cables.push([[ax+.045,anchorHeight,1.575],[bx+.035,1.33+h,z+.375]]);
-      }
-      const acObs=obs.filter(o=>o.kind==='unit'),rackObs=obs.filter(o=>o.kind==='rack');
-      const acNearest=closestOccupied(occupied,acObs),rackNearest=closestOccupied(occupied,rackObs);
-      const acDistance=acNearest.distance,rackDistance=rackNearest.distance;
-      const clothHit=obs.some(o=>boxDistance(cloth,o)<.005);
-      const frameHit=obs.some(o=>frames.some(frame=>boxDistance(frame,o)<.005));
-      const cableHit=obs.some(o=>cables.some(([a,b])=>segmentHits(a,b,o)));
-      const pipeHit=pipeBoxes().some(o=>[...occupied,cloth,...frames].some(b=>boxDistance(b,o)<.005)||cables.some(([a,b])=>segmentHits(a,b,o)));
-      const wallHit=x-e<0||x+1.6+e>3||z-e<.005||z<.3-1e-8;
-      return {acDistance,rackDistance,acNearest,rackNearest,clothHit,frameHit,cableHit,pipeHit,wallHit,clear:acDistance>=.3-1e-8&&rackDistance>=.15-1e-8&&!clothHit&&!frameHit&&!cableHit&&!pipeHit&&!wallHit};
-    }
+    function spatialState(x=Number(sx.value)/1000,z=1.2-Number(sz.value)/1000,h=verticalOffset){return carrierSpatial(x,z,h);}
     function clothExtension(){const a=Number(fold.value)/100*Math.PI/2;return Number(extent.value)/1000*Math.sin(a)+.02*Math.cos(a);}
     function catchCloth(x,z){
       // Existing foldable catch cloth, illustrated independently of the proposed positioning frame.
@@ -1389,7 +1369,7 @@ const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
         }
       }
       drawOffset=verticalOffset;
-      thrusterGeometry(x,z);
+      carrierGeometry(x,z);
       // Suspended basket. Width is 1600 mm; depth/height are illustrative.
       box(x,.445,z,1.6,.085,.75,palette.boat);
       box(x,.53,z,1.6,.17,.025,palette.boat);
@@ -1401,20 +1381,14 @@ const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
         for(const zz of [z,z+.75])rod([x,yy,zz],[x+1.6,yy,zz],palette.boat,.019);
         for(const xx of [x,x+1.6])rod([xx,yy,z],[xx,yy,z+.75],palette.boat,.019);
       }
-      for(const xx of [x+.15,x+1.45]){
-        rod([xx,.50,z+.375],[xx,1.76,z+.375],palette.boat,.029);
-        box(xx-.08,1.29,z+.285,.16,.22,.18,palette.fg);
-      }
       catchCloth(x,z);
-      // Roof anchors stay at the same coordinates. Cable upper lengths are schematic.
+      // The fixed roof cables terminate on the stationary carrier, above the crew.
       drawOffset=0;
-      for(const pair of [[.85,x+.15],[2.15,x+1.45]]){
-        const [ax,bx]=pair;
+      for(const ax of [.85,2.15]){
         box(ax-.11,anchorHeight+.02,1.495,.22,.055,.16,palette.fg);
         sphere([ax,anchorHeight,1.575],.025,palette.fg);
-        line([ax,anchorHeight,1.575],[bx,1.76+verticalOffset,z+.375],palette.fg,2);
-        line([ax+.045,anchorHeight,1.575],[bx+.035,1.33+verticalOffset,z+.375],palette.fg,1, .7,[4,3]);
       }
+      carrierCables(verticalOffset).forEach(([a,b],i)=>line(a,b,palette.fg,i%2?1:2,i%2?.7:1,i%2?[4,3]:[]));
       // Both occupancy states stay inside the guardrails and move with the basket.
       drawOffset=verticalOffset;
       const workerOffsets=Number(people.value)===2?[.48,1.12]:[.80];
@@ -1425,7 +1399,7 @@ const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
       return {x,z,m,front,rear,left,right,acWidth};
     }
     function fit(){
-      const v=verticalView(),bounds=[];for(const x of [-.25,3.25])for(const y of [v.lo,v.hi])for(const z of [-.15,2.55])bounds.push(camera([x,y,z]));
+      const v=verticalView(),bounds=[];for(const x of [-.25,3.25])for(const y of [v.lo,v.hi])for(const z of [-.15,2.9])bounds.push(camera([x,y,z]));
       const maxX=Math.max(...bounds.map(p=>Math.abs(p[0]))),maxY=Math.max(...bounds.map(p=>Math.abs(p[1])));
       scale=Math.min((width-30)/(2*maxX),(height-75)/(2*maxY))*zoom;
     }
@@ -1484,6 +1458,8 @@ const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
           }
         }
       }
+      const cp=project([1.5,2.88+verticalOffset,1.575]);label('吊纜承托架',cp[0],cp[1]);
+      const cb=balanceState(),bp=project([cb.cx,-.75+verticalOffset,cb.cz]);label('反向配重 '+cb.counterMass+' kg',bp[0],bp[1]);
       if(!showDistances)return;
       const dims=nearbyDimensions(state.x,state.z),placed=[];
       ctx.font='12px '+getComputedStyle(root).fontFamily;
@@ -1515,32 +1491,93 @@ const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
     }
     function render(){fit();const state=model();paint();labels(state);}
 
-function forceDemand(){
-  const mass=Number($('#b-mass').value),H=anchorHeight-(1.76+verticalOffset);
-  const dx=Number(sx.value)/1000-.7,dz=-Number(sz.value)/1000;
-  // Ideal symmetric main cables; both lower attachments have identical translation.
-  const fx=mass*9.81*dx/H,fz=mass*9.81*dz/H;
-  return {mass,H,dx,dz,fx,fz,total:Math.hypot(fx,fz)};
+function balanceState(x=Number(sx.value)/1000,z=1.2-Number(sz.value)/1000){
+  const workingMass=220+90*Number(people.value),frameMass=150,counterMass=Number($('#b-mass').value);
+  const frameCx=1.5,frameCz=1.9,supportX=1.5,supportZ=1.575;
+  const cx=supportX-workingMass/counterMass*(x+.8-supportX);
+  const cz=supportZ-(workingMass*(z+.375-supportZ)+frameMass*(frameCz-supportZ))/counterMass;
+  const total=workingMass+frameMass+counterMass;
+  const gx=(workingMass*(x+.8)+frameMass*frameCx+counterMass*cx)/total;
+  const gz=(workingMass*(z+.375)+frameMass*frameCz+counterMass*cz)/total;
+  const fits=Number.isFinite(counterMass)&&counterMass>=200&&counterMass<=800&&cx>=.9&&cx<=2.1&&cz>=1.30&&cz<=2.45;
+  return {workingMass,frameMass,counterMass,total,cx,cz,gx,gz,fits};
 }
-function thrusterGeometry(x,z){
-  const f=forceDemand(),angle=f.total>1?Math.atan2(f.dz,f.dx):Math.PI/2;
-  const direction=[Math.cos(angle),0,Math.sin(angle)],across=[-direction[2],0,direction[0]];
-  for(const dx of [.24,1.36])for(const dz of [.17,.58]){
-    const c=[x+dx,.26,z+dz],rings=[];
-    for(const s of [-1,1])rings.push(Array.from({length:25},(_,j)=>{
-      const a=j*Math.PI/12;
-      return [c[0]+s*.105*direction[0]+.115*Math.cos(a)*across[0],c[1]+.115*Math.sin(a),c[2]+s*.105*direction[2]+.115*Math.cos(a)*across[2]];
-    }));
-    for(let i=1;i<25;i++)shape([rings[0][i-1],rings[0][i],rings[1][i],rings[1][i-1]],palette.frame,null);
-    for(const ring of rings){shape(ring,null,palette.fg,1);for(let j=0;j<12;j+=3)line(ring[j],ring[j+12],palette.fg,1);}
-    rod([c[0],.40,c[2]],[c[0],.445,c[2]],palette.frame,.022);
+function carrierParts(x,z,h){
+  const parts=[],b=balanceState(x,z),spread=Number(fold.value)/100;
+  const add=(name,xx,yy,zz,w,hh,d,color='frame',guard=false)=>parts.push({name,min:[xx,yy+h,zz],max:[xx+w,yy+hh+h,zz+d],color,guard});
+  // Rear portal: clear of the full forward/backward working-basket envelope.
+  for(const xx of [.38,2.62]){
+    add('後門架立柱',xx-.04,-.70,2.32,.08,3.40,.08,'frame',true);
   }
-  if(f.total>1){
-    const a=[x+.8,.12,z+.375],b=[a[0]+direction[0]*.55,a[1],a[2]+direction[2]*.55];
-    rod(a,b,palette.slide,.018);
-    for(const side of [-1,1])rod(b,[b[0]-.14*direction[0]+side*.09*across[0],b[1],b[2]-.14*direction[2]+side*.09*across[2]],palette.slide,.018);
+  for(const yy of [-.70,.12,2.60])add('後門架橫樑',.34,yy,2.32,2.32,.08,.08,'frame',yy>2);
+  for(const xx of [.85,2.15]){
+    add('上懸臂',xx-.05,2.60,1.515,.10,.10,.885,'frame',true);
+    add('吊耳',xx-.03,2.69,1.545,.06,.06,.06,'fg',true);
+    add('提升機',xx-.09,2.39,1.475,.18,.21,.20,'fg',true);
+    add('下配重導軌',xx-.045,-.66,1.04,.09,.08,1.68);
+    add('配重導向滑座',xx-.06,-.59,b.cz-.09,.12,.06,.18,'slide');
+    add('前後固定導軌',xx-.05,.14,1.02,.10,.11,1.38);
+    const front=Math.min(1.10,z+.12);
+    add('前後伸縮臂',xx-.033,.165,front,.066,.06,1.55-front,'slide');
   }
+  add('下配重後橫樑',.70,-.66,2.64,1.60,.08,.08);
+  // Rails retract laterally with the transfer sequence. Their steel lengths are schematic.
+  const left=.72-.44*spread,right=2.28+.44*spread;
+  for(const zz of [z+.17,z+.58]){
+    add('左右導軌',left,.265,zz-.04,right-left,.07,.08,'slide');
+    for(const xx of [.85,2.15])add('前後導向滑座',xx-.065,.215,zz-.06,.13,.065,.12,'slide');
+    for(const xx of [x+.16,x+1.44])add('船底滑座',xx-.06,.335,zz-.06,.12,.11,.12,'slide');
+  }
+  add('配重滑台',.76,-.55,b.cz-.26,1.48,.07,.52,'slide');
+  add('配重箱',b.cx-.4,-.48,b.cz-.225,.8,.24,.45,'counter');
+  return parts;
 }
+function carrierCables(h){
+  return [.85,2.15].flatMap(ax=>[
+    [[ax,anchorHeight,1.575],[ax,2.72+h,1.575]],
+    [[ax+.045,anchorHeight,1.575],[ax+.045,2.41+h,1.575]]
+  ]);
+}
+function carrierGeometry(x,z){
+  const colorsByPart={frame:palette.frame,slide:palette.slide,fg:palette.fg,counter:shade(palette.fg,.75)};
+  for(const p of carrierParts(x,z,0))box(...p.min,...p.max.map((v,i)=>v-p.min[i]),colorsByPart[p.color]);
+  // Rear-plane diagonal bracing, included in the collision envelopes below.
+  rod([.38,.20,2.36],[2.62,2.60,2.36],palette.frame,.018);
+  rod([2.62,.20,2.36],[.38,2.60,2.36],palette.frame,.018);
+  const b=balanceState(x,z);
+  for(const yy of [-.43,-.35])line([b.cx-.37,yy,b.cz+.228],[b.cx+.37,yy,b.cz+.228],palette.border,1);
+  sphere([1.5,2.80,1.575],.035,palette.slide);
+}
+function carrierSpatial(x,z,h){
+  const obs=obstacleBoxes(),occupied=occupiedBoxes(x,z,h),e=clothExtension();
+  const cloth={min:[x-e,.69+h,z-e],max:[x+1.6+e,1.15+h,z+.75+e]};
+  const parts=carrierParts(x,z,h),frames=frameBoxes(x,z,h),cables=carrierCables(h),balance=balanceState(x,z);
+  const acNearest=closestOccupied(occupied,obs.filter(o=>o.kind==='unit')),rackNearest=closestOccupied(occupied,obs.filter(o=>o.kind==='rack'));
+  const clothHit=obs.some(o=>boxDistance(cloth,o)<.005);
+  const frameHit=obs.some(o=>frames.some(p=>boxDistance(p,o)<.005));
+  const cableHit=obs.some(o=>cables.some(([a,b])=>segmentHits(a,b,o)));
+  const pipeHit=pipeBoxes().some(o=>[...occupied,cloth,...frames].some(p=>boxDistance(p,o)<.005)||cables.some(([a,b])=>segmentHits(a,b,o)));
+  const wallHit=x-e<0||x+1.6+e>3||z-e<.005||z<.3-1e-8||frames.some(p=>p.min[0]<.005||p.max[0]>2.995||p.min[2]<.005);
+  const selfHit=parts.filter(p=>p.guard).some(p=>[...occupied,cloth].some(o=>boxDistance(p,o)<.005));
+  const acDistance=acNearest.distance,rackDistance=rackNearest.distance;
+  return {acNearest,rackNearest,acDistance,rackDistance,clothHit,frameHit,cableHit,pipeHit,wallHit,selfHit,balance,
+    clear:acDistance>=.3-1e-8&&rackDistance>=.15-1e-8&&!clothHit&&!frameHit&&!cableHit&&!pipeHit&&!wallHit&&!selfHit&&balance.fits};
+}
+function update(){
+  const s=spatialState(),b=s.balance;
+  $('#b-status').textContent=`目前高度 ${Math.round(verticalOffset*1000)} mm · 船身距左牆 ${Math.round(Number(sx.value))} mm · 向前移近 ${Math.round(Number(sz.value))} mm · 帆布／橫軌展開 ${Math.round(Number(fold.value))}%。${notice}`;
+  $('#b-force').textContent=`質量假設：工作船連人及工具 ${b.workingMass} kg ＋ 承托架 ${b.frameMass} kg ＋ 配重 ${b.counterMass} kg ＝ ${b.total} kg；配重中心距左牆 ${Math.round(b.cx*1000)} mm／距前牆 ${Math.round(b.cz*1000)} mm。`;
+  $('#c-balance').textContent=`理想靜態合成重心：距左牆 ${Math.round(b.gx*1000)} mm／距前牆 ${Math.round(b.gz*1000)} mm；目標為 1500／1575 mm。${b.fits?'配重在假設滑台範圍內。':'配重超出滑台範圍。'}`;
+  const reasons=[];
+  if(s.frameHit)reasons.push('支架／配重與障礙物干涉');if(s.selfHit)reasons.push('工作船／帆布與承托架干涉');
+  if(s.clothHit)reasons.push('帆布與障礙物干涉');if(s.pipeHit)reasons.push('喉管干涉');if(s.cableHit)reasons.push('吊纜干涉');if(s.wallHit)reasons.push('牆面間隙不足');if(!b.fits)reasons.push('配重行程不足');
+  $('#b-clearance').textContent=`${s.clear?'此位置通過簡化幾何與重心條件':'此位置不符合模型條件'} · 人員／船身至晾架 ${Math.round(s.rackDistance*1000)} mm · 至設備 ${Number.isFinite(s.acDistance)?Math.round(s.acDistance*1000)+' mm':'無'}。${reasons.join('；')}`;
+  $('#b-clearance').classList.toggle('text-destructive',!s.clear);
+  $('#b-pause').disabled=!motion;$('#b-skip').disabled=!motion;$('#b-pause').textContent=paused?'繼續動畫':'暫停動畫';
+  for(const id of ['b-x','b-z','b-height','b-upper','b-lower','b-return','g3-ac','g3-extent','g3-people','b-mass'])$('#'+id).disabled=!!motion;
+  $('#b-ac-value').textContent=ac.value;$('#b-extent-value').textContent=extent.value;render();
+}
+
 let motion=null,raf=0,paused=false,lastTime=0,notice='';
 const pose=()=>({x:Number(sx.value),z:Number(sz.value),h:verticalOffset,f:Number(fold.value)});
 function assign(p){sx.value=String(p.x);sz.value=String(p.z);verticalOffset=p.h;fold.value=String(p.f);}
@@ -1559,17 +1596,17 @@ function planTo(goal){
   // Validate a swept sampled path; never jump directly to a disconnected clear position.
   for(let i=1;i<path.length;i++){
     const a=path[i-1],b=path[i],n=Math.ceil(Math.max(Math.abs(a.x-b.x)/5,Math.abs(a.z-b.z)/5,Math.abs(a.h-b.h)*1000/5,Math.abs(a.f-b.f)))||1;
-    for(let j=0;j<=n;j++)if(!poseClear(interpolate(a,b,j/n))){notice='目標或途經位置不符合間隙條件；目前位置保留。';syncTargets();update();return;}
+    for(let j=0;j<=n;j++)if(!poseClear(interpolate(a,b,j/n))){notice='目標或途經位置超出支架／配重行程，或不符合間隙條件；目前位置保留。';syncTargets();update();return;}
   }
   if(path.length<2){notice='已在目標位置。';update();return;}
-  motion={path,segment:0,elapsed:0,duration:path.length>2?5000:8000};notice='幾何路徑演示中；所需推力不代表設備能提供。';lastTime=performance.now();update();raf=requestAnimationFrame(tick);
+  motion={path,segment:0,elapsed:0,duration:path.length>2?5000:8000};notice='工作船與配重同步反向移動；演示未含風擺。';lastTime=performance.now();update();raf=requestAnimationFrame(tick);
 }
 function tick(now){
   if(!motion||paused)return;
   motion.elapsed+=Math.min(now-lastTime,100);lastTime=now;
   const t=Math.min(1,motion.elapsed/motion.duration),{path,segment}=motion;
   assign(interpolate(path[segment],path[segment+1],ease(t)));
-  if(t>=1){motion.segment++;motion.elapsed=0;if(motion.segment>=path.length-1){motion=null;notice='已到達幾何目標；持續推力及姿態控制仍待驗證。';}}
+  if(t>=1){motion.segment++;motion.elapsed=0;if(motion.segment>=path.length-1){motion=null;notice='已到達幾何目標；滑台鎖止及整體防擺待驗證。';}}
   update();if(motion)raf=requestAnimationFrame(tick);
 }
 function syncTargets(){
@@ -1577,27 +1614,16 @@ function syncTargets(){
 }
 function targetReadouts(){for(const name of ['x','z','height'])$('#b-'+name+'-target').textContent=$('#b-'+name).value;}
 function requested(){return {x:Number($('#b-x').value),z:Number($('#b-z').value),h:Number($('#b-height').value)/1000,f:100};}
-function update(){
-  const s=spatialState(),f=forceDemand();
-  $('#b-status').textContent=`目前高度 ${Math.round(verticalOffset*1000)} mm · 距左牆 ${Math.round(Number(sx.value))} mm · 移近 ${Math.round(Number(sz.value))} mm · 帆布展開 ${Math.round(Number(fold.value))}%。${notice}`;
-  $('#b-force').textContent=Number.isFinite(f.mass)&&f.mass>=100&&f.mass<=2000?`理想無風靜態需求：水平合推力 ${Math.round(f.total)} N（左右 ${Math.round(f.fx)} N／前後 ${Math.round(f.fz)} N）；吊點至主繩下端垂直距離 ${f.H.toFixed(2)} m。未含風力、加速、力矩及餘量。`:'請輸入 100–2000 kg 的質量假設；不代表容許載重。';
-  $('#b-clearance').textContent=`${s.clear?'此位置通過簡化幾何條件':'此位置不符合簡化幾何條件'} · 晾架 ${Math.round(s.rackDistance*1000)} mm · 設備 ${Number.isFinite(s.acDistance)?Math.round(s.acDistance*1000)+' mm':'無'} · ${s.clothHit||s.frameHit||s.cableHit||s.pipeHit||s.wallHit?'外廓有干涉':'帆布／模組／吊纜／喉管未見干涉'}。`;
-  $('#b-clearance').classList.toggle('text-destructive',!s.clear);
-  $('#b-pause').disabled=!motion;$('#b-skip').disabled=!motion;$('#b-pause').textContent=paused?'繼續動畫':'暫停動畫';
-  for(const id of ['b-x','b-z','b-height','b-upper','b-lower','b-return','g3-ac','g3-extent','g3-people'])$('#'+id).disabled=!!motion;
-  $('#b-ac-value').textContent=ac.value;$('#b-extent-value').textContent=extent.value;
-  render();
-}
 for(const name of ['x','z','height']){const control=$('#b-'+name);control.addEventListener('input',targetReadouts);control.addEventListener('change',()=>planTo(requested()));}
 for(const [id,h]of [['b-upper',2.2],['b-lower',-.8]])$('#'+id).addEventListener('click',()=>{$('#b-height').value=String(h*1000);$('#b-x').value='700';$('#b-z').value='0';targetReadouts();planTo(requested());});
 $('#b-return').addEventListener('click',()=>{$('#b-x').value='700';$('#b-z').value='0';$('#b-height').value=String(Math.round(verticalOffset*1000));targetReadouts();planTo(requested());});
 $('#b-pause').addEventListener('click',()=>{paused=!paused;if(!paused){lastTime=performance.now();raf=requestAnimationFrame(tick);}else cancelAnimationFrame(raf);update();});
-$('#b-skip').addEventListener('click',()=>{if(!motion)return;assign(motion.path.at(-1));motion=null;paused=false;cancelAnimationFrame(raf);notice='已完成通過幾何檢查的路徑；動力與失效控制未驗證。';update();});
-for(const e of [ac,extent,people]){
+$('#b-skip').addEventListener('click',()=>{if(!motion)return;assign(motion.path.at(-1));motion=null;paused=false;cancelAnimationFrame(raf);notice='已完成通過幾何檢查的路徑；結構強度及失效保護未驗證。';update();});
+for(const e of [ac,extent,people,$('#b-mass')]){
   let previous=e.value;
-  e.addEventListener(e===people?'change':'input',()=>{if(!poseClear(pose())){e.value=previous;notice='新外廓與目前位置不相容；請先退回或選另一高度。';}else{previous=e.value;notice='尺寸／人數已更新；總質量假設請另行調整。';}update();});
+  e.addEventListener(e===people?'change':'input',()=>{if(((e===people||e===$('#b-mass'))&&(Math.abs(Number(sx.value)-700)>.01||Math.abs(Number(sz.value))>.01))||!poseClear(pose())){e.value=previous;notice='新設定與目前位置不相容；人員／配重資料須先回中後修改。';}else{previous=e.value;notice='設定已更新；質量及配重位置按假設重新計算。';}update();});
 }
-$('#b-mass').addEventListener('input',update);
+
 $('#g3-distance-toggle').addEventListener('click',()=>{showDistances=!showDistances;$('#g3-distance-toggle').textContent=showDistances?'尺寸顯示：開':'尺寸顯示：關';$('#g3-distance-toggle').setAttribute('aria-pressed',String(showDistances));$('#g3-distance-summary').hidden=!showDistances;render();});
 themeToggle.addEventListener('click',()=>{chosenTheme=root.dataset.g3Theme!=='dark';applyTheme(chosenTheme);colors();render();});
 systemTheme.addEventListener('change',e=>{if(chosenTheme===null){applyTheme(e.matches);colors();render();}});
@@ -1613,8 +1639,7 @@ new MutationObserver(()=>{colors();render();}).observe(document.documentElement,
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&motion){paused=true;cancelAnimationFrame(raf);update();}});
 applyTheme(systemTheme.matches);resize();syncTargets();update();
 
-})();
-  </script>
+})();</script>
 </div>
 
 </body>

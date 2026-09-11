@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>方案 C — 懸吊承托架與反向配重</title>
+<title>方案 B — 懸吊承托架＋配重 | 吊船方案比較</title>
 <style>:root {
   color-scheme: light dark;
   background-color: var(
@@ -1025,47 +1025,58 @@ html>body{padding:0}</style>
 </head>
 <body>
 <div id="gondola-carrier">
-  <div class="viz-row"><strong>方案 C · 懸吊承托架＋反向配重</strong><span class="text-small">新增建築支點 0 個 · 機構與靜態重心概念</span></div>
-  <div class="viz-row">
+  <div class="viz-row"><strong>吊船方案比較</strong><span class="text-small">方案 B · 懸吊承托架＋配重</span></div>
+  <nav class="viz-row" aria-label="比較方案"><a class="btn" href="https://xxqcarlospxx.github.io/gondola-3d-simulation/" >方案 A · 外牆扣接架</a><a class="btn btn-primary" href="https://xxqcarlospxx.github.io/gondola-3d-simulation/no-building-anchors.html" aria-current="page">方案 B · 懸吊承托架＋配重</a></nav>
+  <div class="viz-row" data-ui-group="view">
     <button type="button" class="btn" id="g3-theme-toggle" aria-label="深色模式" aria-pressed="false">深色模式：關</button>
     <button type="button" class="btn" id="g3-distance-toggle" aria-pressed="false">尺寸顯示：關</button>
-    <label class="form-label">船上人數 <select class="form-select" id="g3-people"><option value="2">2 人</option><option value="1">1 人</option></select></label>
-    <label class="form-label">視角 <select class="form-select" id="g3-view"><option value="iso">斜角</option><option value="under">船底支架及配重</option><option value="front">正面</option><option value="top">俯視</option><option value="side">側面</option></select></label>
+    <button type="button" class="btn" id="g3-settings-toggle" aria-expanded="true" aria-controls="g3-ac-setting g3-extent-setting">隱藏尺寸設定</button>
+    <label class="form-label">船上人數 <select class="form-select" id="g3-people"><option value="2" selected>2 人</option><option value="1">1 人</option></select></label>
+    <label class="form-label">視角 <select class="form-select" id="g3-view"><option value="iso">斜角</option><option value="under">底部斜視</option><option value="front">正面</option><option value="top">俯視</option><option value="side">側面</option></select></label>
     <label class="form-check"><input id="g3-wall" class="form-check-input" type="checkbox" checked><span class="form-check-label">外牆示意</span></label>
   </div>
-  <div class="viz-controls">
-    <label class="form-label"><span>目標高度 · <output id="b-height-target">0</output> mm</span><input id="b-height" class="form-range" type="range" min="-3000" max="3000" value="0" step="10" aria-label="目標高度，毫米"></label>
-    <label class="form-label"><span>船身距左牆 · <output id="b-x-target">700</output> mm</span><input id="b-x" class="form-range" type="range" min="300" max="1100" value="700" step="10" aria-label="目標距左牆位置，毫米"></label>
-    <label class="form-label"><span>向前移近 · <output id="b-z-target">0</output> mm</span><input id="b-z" class="form-range" type="range" min="0" max="900" value="0" step="10" aria-label="目標向前移近，毫米"></label>
+  <div class="comparison-workspace">
+  <div class="comparison-controls">
+  <div class="viz-controls" data-ui-group="height">
+    <label class="form-label"><span>目標高度 <output id="ui-height-target">0</output> mm · 目前 <output id="ui-height-current">0</output> mm</span><input id="ui-height" class="form-range" type="range" min="-3000" max="3000" value="0" step="10" aria-label="目標高度，毫米"></label>
   </div>
-  <div class="viz-row">
-    <button type="button" class="btn" id="b-top">上層 +3000 mm</button>
-    <button type="button" class="btn" id="b-upper">上／中層間最大活動範圍 +2200 mm</button>
-    <button type="button" class="btn" id="b-middle">中層 0 mm</button>
-    <button type="button" class="btn" id="b-lower">中／下層間最大活動範圍 −800 mm</button>
-    <button type="button" class="btn" id="b-bottom">下層 −3000 mm</button>
-    <button type="button" class="btn" id="b-return">工作船退回中位</button>
-    <button type="button" class="btn" id="b-pause" disabled>暫停動畫</button>
-    <button type="button" class="btn" id="b-skip" disabled>跳過動畫</button>
+  <div class="viz-row" data-ui-group="presets">
+    <button type="button" class="btn" data-height="3">上層 +3000 mm</button>
+    <button type="button" class="btn" data-height="2.2">上／中層間最大活動範圍 +2200 mm</button>
+    <button type="button" class="btn" data-height="0">中層 0 mm</button>
+    <button type="button" class="btn" data-height="-0.8">中／下層間最大活動範圍 −800 mm</button>
+    <button type="button" class="btn" data-height="-3">下層 −3000 mm</button>
   </div>
-  <div class="text-small">移動工作船時，配重反向移動。升降前先退回中位、收帆布及橫軌；承托架隨吊纜一起升降。</div>
-  <div id="b-status" class="text-small" aria-live="polite"></div>
-  <div class="viz-controls">
-    <label class="form-label"><span>配重質量假設 · kg</span><input id="b-mass" class="form-control" type="number" min="200" max="800" step="10" value="300"></label>
-    <label class="form-label"><span>側面設備各向內佔位 · <output id="b-ac-value">400</output> mm</span><input id="g3-ac" class="form-range" type="range" min="0" max="600" step="10" value="400" aria-label="側面設備佔位，毫米"></label>
-    <label class="form-label"><span>帆布每邊伸出 · <output id="b-extent-value">250</output> mm（未實測）</span><input id="g3-extent" class="form-range" type="range" min="100" max="500" step="10" value="250" aria-label="帆布每邊伸出，毫米"></label>
+  <div class="viz-controls" data-ui-group="position">
+    <label class="form-label"><span>目標距左牆 <output id="ui-x-target">700</output> mm · 目前 <output id="ui-x-current">700</output> mm</span><input id="ui-x" class="form-range" type="range" min="300" max="1100" value="700" step="10" aria-label="目標距左牆位置，毫米"></label>
+    <label class="form-label"><span>目標向前移近 <output id="ui-z-target">0</output> mm · 目前 <output id="ui-z-current">0</output> mm</span><input id="ui-z" class="form-range" type="range" min="0" max="900" value="0" step="10" aria-label="目標向前移近，毫米"></label>
   </div>
-  <div id="b-force" class="text-small" aria-live="polite"></div>
-  <div id="c-balance" class="text-small"></div>
-  <div id="g3-stage"><canvas id="g3-canvas" role="img" aria-label="固定天台吊纜懸吊粉色門形承托架；藍色工作船沿綠色雙軸滑台移動，下層灰色配重反向移動。不接觸外牆，合成重心保持在吊點下方的理想靜態演示。"></canvas></div>
-  <div class="viz-row text-small"><span>粉：懸吊承托架</span><span>綠：前後／左右滑台</span><span>灰：反向配重</span><span>藍：工作船</span><span>橙：原有接物帆布</span></div>
+  <div class="viz-row" data-ui-group="motion">
+    <button type="button" class="btn" id="ui-return">工作船退回中位</button>
+    <button type="button" class="btn" id="ui-lateral">播放一次橫移</button>
+    <button type="button" class="btn" id="ui-pause" disabled>暫停動畫</button>
+    <button type="button" class="btn" id="ui-skip" disabled>跳過動畫</button>
+  </div>
+  <div class="viz-controls" data-ui-group="dimensions">
+    <label class="form-label" id="g3-ac-setting"><span>側面設備各向內佔位 <output id="ui-ac-value">400</output> mm（假設）</span><input id="g3-ac" class="form-range" type="range" min="0" max="600" step="10" value="400" aria-label="側面設備佔位，毫米"></label>
+    <label class="form-label" id="g3-extent-setting"><span>帆布每邊伸出 <output id="ui-extent-value">250</output> mm（未實測）</span><input id="g3-extent" class="form-range" type="range" min="100" max="500" step="10" value="250" aria-label="帆布每邊伸出，毫米"></label>
+  </div>
+  <div class="text-small">放開滑桿後慢速移動；可用範圍依各方案的模型檢查而定。</div>
+  <div id="ui-status" class="text-small" aria-live="polite"></div>
+  </div>
+  <div class="comparison-scene">
+  <div id="g3-stage"><canvas id="g3-canvas" role="img" aria-label="方案 B · 懸吊承托架＋配重，三層外牆及吊船的可旋轉三維幾何演示，未驗證載人施工安全。"></canvas></div>
+  <div class="viz-row text-small"><span>藍：工作船</span><span>橙：原有接物帆布</span><span>粉：懸吊承托架</span><span>綠：滑台</span><span>灰：反向配重</span></div>
   <div id="g3-distance-summary" class="text-small" hidden></div>
-  <div id="b-clearance" class="text-small" aria-live="polite"></div>
-  <div class="text-small">受力路徑：工作船／配重 → 滑台 → 承托架 → 原有吊纜及固定天台吊點。需要重新配置提升機及獨立安全系統，不能夾在護欄上承重。</div>
-  <div class="text-small">配重只補償重心偏移；整套裝置仍可受風擺動。滑台鎖止不等於整船防擺，未驗證載人施工、抗風或斷電安全。</div>
-  <div class="text-small">承托架及配重外廓、兩人載重、導軌強度、吊點承載和失效保護均需實測及工程設計；圖示尺寸與質量是探索假設。</div>
+  <div id="ui-clearance" class="text-small"></div>
+  </div>
+  </div>
+  <details id="ui-scheme-settings"><summary>方案設定</summary><div class="viz-controls"><label class="form-label">配重質量假設（kg）<input id="b-mass" class="form-control" type="number" min="200" max="800" step="10" value="300"></label></div><div id="b-force" class="text-small"></div><div id="c-balance" class="text-small"></div></details>
+  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">受力路徑：工作船及配重 → 滑台 → 承托架 → 原有吊纜及固定天台吊點。新增建築支點 0 個，需重新配置提升機及獨立安全系統。</div><div class="text-small">配重只補償理想靜態重心偏移；整套裝置仍可受風擺動。滑台鎖止不等於整船防擺，載重、強度及失效保護尚待驗證。</div></details>
+  <div class="text-small">幾何及尺寸為示意假設，未驗證結構、抗風及載人施工安全。</div>
+  <div hidden><input id="b-height" type="range" min="-3000" max="3000" value="0" step="10"><output id="b-height-target"></output><input id="b-x" type="range" min="300" max="1100" value="700" step="10"><output id="b-x-target"></output><input id="b-z" type="range" min="0" max="900" value="0" step="10"><output id="b-z-target"></output><button id="b-top" type="button"></button><button id="b-upper" type="button"></button><button id="b-middle" type="button"></button><button id="b-lower" type="button"></button><button id="b-bottom" type="button"></button><button id="b-return" type="button"></button><button id="b-pause" type="button"></button><button id="b-skip" type="button"></button><output id="b-status"></output><output id="b-ac-value"></output><output id="b-extent-value"></output><output id="b-clearance"></output></div>
   <style>
-        #gondola-carrier { color:var(--foreground); --g3-boat-color:light-dark(#3489d5,#72b7ef); --g3-frame-color:light-dark(#df72ac,#f19ac7); --g3-cloth-color:light-dark(#ed8b20,#ffad4b); }
+    #gondola-carrier { color:var(--foreground); --g3-boat-color:light-dark(#3489d5,#72b7ef); --g3-frame-color:light-dark(#df72ac,#f19ac7); --g3-cloth-color:light-dark(#ed8b20,#ffad4b); }
     #gondola-carrier[data-g3-theme] {
       background:var(--background);
       --background:light-dark(rgb(255 255 255),rgb(24 24 24));
@@ -1081,11 +1092,30 @@ html>body{padding:0}</style>
       --ring:var(--primary);
       --destructive:light-dark(rgb(226 85 7),rgb(255 133 73));
     }
-
-    #gondola-carrier #g3-stage { width:100%; }
-    #gondola-carrier #g3-canvas { display:block;width:100%;touch-action:none;cursor:grab; }
+    #gondola-carrier #g3-stage { width:100%; position:relative; }
     #gondola-carrier [hidden] { display:none !important; }
-  </style>
+    #gondola-carrier #g3-canvas { display:block; width:100%; touch-action:none; cursor:grab; }
+    #gondola-carrier #g3-canvas:active { cursor:grabbing; }
+    #gondola-carrier .g3-swatch { display:inline-block; width:12px; height:8px; margin-right:5px; }
+    #gondola-carrier .g3-boat { background:var(--g3-boat-color); }
+    #gondola-carrier .g3-frame { background:var(--g3-frame-color); }
+    #gondola-carrier .g3-slide { background:var(--viz-series-3); }
+    #gondola-carrier .g3-cloth { background:var(--g3-cloth-color); }
+  
+    #gondola-carrier { display:grid; gap:12px; }
+    #gondola-carrier .comparison-workspace { display:grid; grid-template-columns:minmax(0,1fr); gap:20px; }
+    #gondola-carrier .comparison-controls, #gondola-carrier .comparison-scene { min-width:0; display:grid; align-content:start; gap:12px; }
+    #gondola-carrier [data-ui-group="presets"] { display:flex; flex-wrap:wrap; gap:8px; }
+    #gondola-carrier .comparison-controls .viz-controls { display:grid; grid-template-columns:minmax(0,1fr); }
+    #gondola-carrier .comparison-controls .form-label { min-width:0; }
+    #gondola-carrier output { font-variant-numeric:tabular-nums; }
+    #gondola-carrier details > summary { cursor:pointer; }
+    #gondola-carrier details[open] > summary { margin-bottom:12px; }
+    #gondola-carrier #ui-status { min-height:2.8em; }
+    @media(min-width:960px) {
+      #gondola-carrier .comparison-workspace { grid-template-columns:300px minmax(0,1fr); }
+    }
+</style>
   <script>(()=>{
 const root=document.getElementById('gondola-carrier');
 const $=s=>root.querySelector(s);
@@ -1106,6 +1136,7 @@ const anchorHeight=6.3,floorSpacing=3,floorOffsets=[-3,0,3],facadeBottom=-3.15,f
 const windowBottom=1.23,windowHeight=1.10,windowTop=2.33,deviceHeight=.48,deviceLift=windowTop-(.78+deviceHeight);
 const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
 
+let comparisonRefresh=null;
     const clamp=v=>Math.max(0,Math.min(1,v));
     const ease=v=>{v=clamp(v);return v*v*(3-2*v);};
     function mechanism(){const p=Number(mech.value)/100;return {p,jaw:ease((p-.20)/.15),tx:ease((p-.35)/.30),tz:ease((p-.65)/.25),pin:ease((p-.90)/.10)};}
@@ -1577,8 +1608,8 @@ function update(){
   $('#b-clearance').textContent=`${s.clear?'此位置通過簡化幾何與重心條件':'此位置不符合模型條件'} · 人員／船身至晾架 ${Math.round(s.rackDistance*1000)} mm · 至設備 ${Number.isFinite(s.acDistance)?Math.round(s.acDistance*1000)+' mm':'無'}。${reasons.join('；')}`;
   $('#b-clearance').classList.toggle('text-destructive',!s.clear);
   $('#b-pause').disabled=!motion;$('#b-skip').disabled=!motion;$('#b-pause').textContent=paused?'繼續動畫':'暫停動畫';
-  for(const id of ['b-x','b-z','b-height','b-upper','b-lower','b-return','g3-ac','g3-extent','g3-people','b-mass'])$('#'+id).disabled=!!motion;
-  $('#b-ac-value').textContent=ac.value;$('#b-extent-value').textContent=extent.value;render();
+  for(const id of ['b-x','b-z','b-height','b-top','b-upper','b-middle','b-lower','b-bottom','b-return','g3-ac','g3-extent','g3-people','b-mass'])$('#'+id).disabled=!!motion;
+  $('#b-ac-value').textContent=ac.value;$('#b-extent-value').textContent=extent.value;render();comparisonRefresh?.();
 }
 
 let motion=null,raf=0,paused=false,lastTime=0,notice='';
@@ -1640,6 +1671,64 @@ function resize(){width=Math.max(280,$('#g3-stage').getBoundingClientRect().widt
 new ResizeObserver(resize).observe($('#g3-stage'));
 new MutationObserver(()=>{colors();render();}).observe(document.documentElement,{attributes:true,attributeFilter:['class','style','data-theme']});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&motion){paused=true;cancelAnimationFrame(raf);update();}});
+function comparisonClearance(s){
+  const distance=v=>Number.isFinite(v)?Math.round(v*1000)+' mm':'無';
+  const reasons=[];
+  for(const [key,label] of [['clothHit','帆布'],['frameHit','支架'],['cableHit','吊纜'],['pipeHit','喉管'],['wallHit','牆面'],['selfHit','機構內部']])if(s[key])reasons.push(label);
+  if(s.balance&&!s.balance.fits)reasons.push('配重行程');
+  return `船身／人員至晾架 ${distance(s.rackDistance)}（目標 ≥150 mm）· 至側面設備 ${distance(s.acDistance)}（目標 ≥300 mm）。${s.clear?'此位置通過簡化模型條件。':'此位置不符合模型條件。'}${reasons.length?'需檢查：'+reasons.join('、')+'。':''}`;
+}
+function initComparisonUI(adapter){
+  const q=s=>root.querySelector(s),controls=['height','x','z'].map(n=>q('#ui-'+n));
+  const round=n=>String(Math.round(n));
+  const updateTargets=()=>controls.forEach((el,i)=>q('#ui-'+['height','x','z'][i]+'-target').textContent=el.value);
+  function refresh(){
+    const s=adapter.state(),actual={height:s.pose.h*1000,x:s.pose.x,z:s.pose.z};
+    const target=s.target?{height:s.target.h*1000,x:s.target.x,z:s.target.z}:actual;
+    for(const name of ['height','x','z']){
+      q('#ui-'+name+'-current').textContent=round(actual[name]);q('#ui-'+name).value=round(target[name]);
+    }
+    updateTargets();
+    for(const el of [controls[1],controls[2],q('#ui-return'),q('#ui-lateral')])el.disabled=s.pending||!s.canMove;
+    for(const el of [controls[0],...root.querySelectorAll('[data-height]')])el.disabled=s.pending;
+    for(const el of [q('#g3-people'),q('#g3-ac'),q('#g3-extent')])el.disabled=s.pending||!s.canMove;
+    for(const id of ['g3-fold','g3-mech','b-mass']){const el=q('#'+id);if(el)el.disabled=s.pending||(id==='g3-fold'&&!s.canMove);}
+    if(q('#g3-mech-play'))q('#g3-mech-play').disabled=s.pending&&!s.mechanismPending;
+    q('#ui-pause').disabled=!s.pending;q('#ui-skip').disabled=!s.pending;
+    q('#ui-pause').textContent=s.pending&&!s.running?'繼續動畫':'暫停動畫';
+    q('#ui-ac-value').textContent=ac.value;q('#ui-extent-value').textContent=extent.value;
+    if(q('#ui-status').textContent!==s.message)q('#ui-status').textContent=s.message;
+    q('#ui-clearance').textContent=s.clearance;q('#ui-clearance').classList.toggle('text-destructive',!s.clear);
+  }
+  const desired=()=>({h:Number(q('#ui-height').value)/1000,x:Number(q('#ui-x').value),z:Number(q('#ui-z').value),f:100});
+  controls.forEach((el,i)=>{
+    el.addEventListener('input',updateTargets);
+    el.addEventListener('change',()=>{const target=desired();if(i===0){target.x=700;target.z=0;}adapter.go(target);refresh();});
+  });
+  root.querySelectorAll('[data-height]').forEach(el=>el.addEventListener('click',()=>{adapter.go({h:Number(el.dataset.height),x:700,z:0,f:100});refresh();}));
+  q('#ui-return').addEventListener('click',()=>{adapter.go({...adapter.state().pose,x:700,z:0});refresh();});
+  q('#ui-lateral').addEventListener('click',()=>{adapter.lateral();refresh();});
+  q('#ui-pause').addEventListener('click',()=>{adapter.pause();refresh();});
+  q('#ui-skip').addEventListener('click',()=>{adapter.skip();refresh();});
+  refresh();return refresh;
+}
+
+comparisonRefresh=initComparisonUI({
+  state(){const s=spatialState();return {pose:pose(),target:motion?.path.at(-1),pending:!!motion,running:!!motion&&!paused,canMove:true,message:notice||'已在中位；可選擇目標位置。',clearance:comparisonClearance(s),clear:s.clear};},
+  go:planTo,
+  pause:()=>$('#b-pause').click(),skip:()=>$('#b-skip').click(),
+  lateral(){const start=pose(),dir=start.x<=700?1:-1;let target=start.x;
+    for(let x=start.x+5*dir;x>=300&&x<=1100;x+=5*dir){if(!poseClear({...start,x}))break;target=x;}
+    target=dir>0?Math.floor(target/10)*10:Math.ceil(target/10)*10;
+    if(target!==start.x)planTo({...start,x:target});else{notice='此位置沒有可連續橫移的空間。';update();}
+  }
+});
+let showSizeSettings=true;
+$('#g3-settings-toggle').addEventListener('click',()=>{
+  showSizeSettings=!showSizeSettings;$('#g3-settings-toggle').textContent=showSizeSettings?'隱藏尺寸設定':'顯示尺寸設定';$('#g3-settings-toggle').setAttribute('aria-expanded',String(showSizeSettings));
+  for(const id of ['g3-ac-setting','g3-extent-setting'])$('#'+id).hidden=!showSizeSettings;
+});
+
 applyTheme(systemTheme.matches);resize();syncTargets();update();
 
 })();</script>

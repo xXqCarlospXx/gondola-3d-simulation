@@ -1052,6 +1052,9 @@ html>body{padding:0}</style>
     <label class="form-label"><span>目標向前移近 <output id="ui-z-target">0</output> mm · 目前 <output id="ui-z-current">0</output> mm</span><input id="ui-z" class="form-range" type="range" min="0" max="900" value="0" step="10" aria-label="目標向前移近，毫米"></label>
   </div>
   <div class="viz-row" data-ui-group="motion">
+    <button type="button" class="btn" data-extreme="left">一鍵最左</button>
+    <button type="button" class="btn" data-extreme="right">一鍵最右</button>
+    <button type="button" class="btn" data-extreme="front">一鍵最前</button>
     <button type="button" class="btn" id="ui-return">工作船退回中位</button>
     <button type="button" class="btn" id="ui-lateral">播放一次橫移</button>
     <button type="button" class="btn" id="ui-pause" disabled>暫停動畫</button>
@@ -1689,7 +1692,7 @@ function initComparisonUI(adapter){
       q('#ui-'+name+'-current').textContent=round(actual[name]);q('#ui-'+name).value=round(target[name]);
     }
     updateTargets();
-    for(const el of [controls[1],controls[2],q('#ui-return'),q('#ui-lateral')])el.disabled=s.pending||!s.canMove;
+    for(const el of [controls[1],controls[2],q('#ui-return'),q('#ui-lateral'),...root.querySelectorAll('[data-extreme]')])el.disabled=s.pending||!s.canMove;
     for(const el of [controls[0],...root.querySelectorAll('[data-height]')])el.disabled=s.pending;
     for(const el of [q('#g3-people'),q('#g3-ac'),q('#g3-extent')])el.disabled=s.pending||!s.canMove;
     for(const id of ['g3-fold','g3-mech','b-mass']){const el=q('#'+id);if(el)el.disabled=s.pending||(id==='g3-fold'&&!s.canMove);}
@@ -1706,6 +1709,24 @@ function initComparisonUI(adapter){
     el.addEventListener('change',()=>{const target=desired();if(i===0){target.x=700;target.z=0;}adapter.go(target);refresh();});
   });
   root.querySelectorAll('[data-height]').forEach(el=>el.addEventListener('click',()=>{adapter.go({h:Number(el.dataset.height),x:700,z:0,f:100});refresh();}));
+  root.querySelectorAll('[data-extreme]').forEach(el=>el.addEventListener('click',()=>{
+    const s=adapter.state();if(s.pending||!s.canMove)return;
+    if(!adapter.clear(s.pose)){adapter.notify('目前位置不符合模型條件，請先調整設定或退回中位。');refresh();return;}
+    const direction=el.dataset.extreme,axis=direction==='front'?'z':'x',sign=direction==='left'?-1:1;
+    const limit=direction==='left'?300:direction==='right'?1100:900,start=s.pose[axis];
+    let furthest=start;
+    // Keep other axes and cloth state fixed. Stop at the first obstruction;
+    // a clear destination beyond it is not a reachable shortcut.
+    for(let value=start;Math.abs(value-limit)>.001;){
+      value=sign>0?Math.min(limit,value+5):Math.max(limit,value-5);
+      if(!adapter.clear({...s.pose,[axis]:value}))break;
+      furthest=value;
+    }
+    const target=sign>0?Math.floor((furthest+1e-7)/10)*10:Math.ceil((furthest-1e-7)/10)*10;
+    if((target-start)*sign<.01)adapter.notify('已到達此方向目前可連續到達的最遠位置（以 10 mm 為單位）。');
+    else adapter.go({...s.pose,[axis]:target});
+    refresh();
+  }));
   q('#ui-return').addEventListener('click',()=>{adapter.go({...adapter.state().pose,x:700,z:0});refresh();});
   q('#ui-lateral').addEventListener('click',()=>{adapter.lateral();refresh();});
   q('#ui-pause').addEventListener('click',()=>{adapter.pause();refresh();});
@@ -1716,6 +1737,8 @@ function initComparisonUI(adapter){
 comparisonRefresh=initComparisonUI({
   state(){const s=spatialState();return {pose:pose(),target:motion?.path.at(-1),pending:!!motion,running:!!motion&&!paused,canMove:true,message:notice||'已在中位；可選擇目標位置。',clearance:comparisonClearance(s),clear:s.clear};},
   go:planTo,
+  clear:poseClear,
+  notify(message){notice=message;update();},
   pause:()=>$('#b-pause').click(),skip:()=>$('#b-skip').click(),
   lateral(){const start=pose(),dir=start.x<=700?1:-1;let target=start.x;
     for(let x=start.x+5*dir;x>=300&&x<=1100;x+=5*dir){if(!poseClear({...start,x}))break;target=x;}

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
-<title>方案 A — 外牆扣接架 | 吊船方案比較</title>
+<title>吊船 3D 模型 — 外牆扣接架</title>
 <style>:root {
   color-scheme: light dark;
   background-color: var(
@@ -1073,7 +1073,7 @@ html>body{padding:0}</style>
   </div>
   <div class="comparison-scene">
   <div id="g3-stage"><canvas id="g3-canvas" role="img" aria-label="方案 A · 外牆扣接架，三層外牆及吊船的可旋轉三維幾何演示，未驗證載人施工安全。"></canvas></div>
-  <div class="viz-row text-small"><span>藍：工作船</span><span>橙：三面原有接物帆布</span><span>粉：扣接架／左右導軌</span><span>綠：滑台</span><span>綠圓：防墮扣</span><span>紫圓：motor</span><span>白：水管</span></div>
+  <div class="viz-row text-small"><span>藍：工作船</span><span>橙：三面接物帆布</span><span>粉：扣接架／左右導軌</span><span>綠色上方裝置：防墮扣</span><span>紫色下方裝置：提升機／馬達</span><span>白：新增水管</span><span>深／淺灰：氣喉及鋼絲繩</span></div>
   <div id="g3-distance-summary" class="text-small" hidden></div>
   <div id="ui-clearance" class="text-small"></div>
   </div>
@@ -1083,7 +1083,7 @@ html>body{padding:0}</style>
   <label class="form-label">支架收起程序 <output id="g3-mech-percent">0</output>%<input id="g3-mech" class="form-range" type="range" min="0" max="100" step="1" value="0" aria-label="支架收起程序，0為展開扣接，100為收妥"></label>
   <button class="btn" id="g3-mech-play" type="button">播放收起支架</button>
 </div><div id="g3-mech-status" class="text-small"></div></details>
-  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">左右各兩條吊船鋼絲繩：綠色標示防墮扣，紫色標示 motor。白色水管沿外牆及左右牆角示意，橙色接物帆布只在靠牆、左側及右側展開，街外面不設帆布。</div><div class="text-small">外牆扣接位置為假設，升降前收妥支架，到達目標高度後重新展開。每個工作高度的可靠支點、扣接承載及拆裝方式仍需工程設計。</div></details>
+  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">左右各有獨立防墮扣及提升機／馬達的實體外殼，兩條中性色鋼絲繩分別穿過兩個裝置並由下方伸出。綠、紫色用於識別裝置。</div><div class="text-small">原有中央氣喉及左右分支保留。新增左、中、右三條白色水管及各層斜向分支；中間水管位於氣喉旁，避免重疊。水管直徑暫用 130 mm、分支 70 mm，離牆中心距 280 mm；位置、坡度及裝置外廓未實測。橙色帆布只在靠牆及左右三面，街外面開放。</div><div class="text-small">外牆扣接位置為假設，升降前收妥支架，到達目標高度後重新展開。每個工作高度的可靠支點、扣接承載及拆裝方式仍需工程設計。</div></details>
   <div class="text-small">幾何及尺寸為示意假設，未驗證結構、抗風及載人施工安全。</div>
   <div hidden><input id="g3-x" type="range" min="300" max="1100" step="any" value="700"><input id="g3-z" type="range" min="0" max="900" step="any" value="0">
 <input id="g3-height-slider" type="range" min="-3000" max="3000" step="10" value="0">
@@ -1264,7 +1264,7 @@ html>body{padding:0}</style>
     function occupiedBoxes(x,z,h){
       // The basket does not occupy the empty space beside and in front of workers' heads.
       const boxes=[{part:'船身',min:[x,.445+h,z],max:[x+1.6,1.58+h,z+.75]}];
-      for(const dx of [.15,1.45])boxes.push({part:'提升架',min:[x+dx-.08,1.29+h,z+.285],max:[x+dx+.08,1.79+h,z+.465]});
+      boxes.push(...suspensionEquipment(x,z,h));
       const offsets=Number(people.value)===2?[.48,1.12]:[.80];
       for(const dx of offsets){
         const px=x+dx,pz=z+.43;
@@ -1308,8 +1308,10 @@ html>body{padding:0}</style>
           dims.push({name:(nearest?floorName(nearest.floor):'')+(i===0?'左':'右')+(kind==='rack'?'晾架':'設備')+(hit.part?.startsWith('人員')?'·人':''),...(nearest||{distance:Infinity}),limit:kind==='rack'?.15:.3});
         }
       }
-      const pipe=closestOccupied(occupied,pipeBoxes());
-      dims.push({name:'最近喉管',...nearestPair(pipe.body,pipe.obstacle)});
+      for(const [name,boxes] of [['氣喉',gasPipeBoxes()],['水管',waterPipeBoxes()]]){
+        const pipe=closestOccupied(occupied,boxes);
+        dims.push({name:'最近'+name,...nearestPair(pipe.body,pipe.obstacle)});
+      }
       return dims;
     }
     function branchPaths(){
@@ -1331,7 +1333,7 @@ html>body{padding:0}</style>
       });
     }
     let sitePipeCache;
-    function pipeBoxes(){
+    function gasPipeBoxes(){
       // Straight runs and conservative elbow envelopes share the rendered path.
       if(!sitePipeCache)sitePipeCache=[
         {min:[1.445,facadeBottom,.025],max:[1.555,facadeTop,.215]},
@@ -1343,6 +1345,40 @@ html>body{padding:0}</style>
         ))
       ];
       return sitePipeCache;
+    }
+    // Added water network, separate from the existing central gas riser and gas branches.
+    // Assumed diameters/offsets only: centre water riser sits beside the gas riser.
+    function waterSegments(){
+      const segments=[];
+      for(const x of [.12,1.32,2.88])segments.push({a:[x,facadeBottom,.28],b:[x,facadeTop,.28],r:.065});
+      for(const h of floorOffsets){
+        segments.push({a:[.12,.74+h,.28],b:[1.32,.98+h,.28],r:.035});
+        segments.push({a:[1.32,.98+h,.28],b:[2.88,.74+h,.28],r:.035});
+      }
+      return segments;
+    }
+    let waterPipeCache;
+    function waterPipeBoxes(){
+      if(!waterPipeCache)waterPipeCache=waterSegments().flatMap(({a,b,r})=>{
+        // Small conservative envelopes follow the sloping branch rather than filling its bounding rectangle.
+        const n=a[0]===b[0]&&a[2]===b[2]?1:Math.ceil(Math.hypot(...b.map((v,i)=>v-a[i]))/.08);
+        return Array.from({length:n},(_,j)=>segmentBox(a.map((v,i)=>v+(b[i]-v)*j/n),a.map((v,i)=>v+(b[i]-v)*(j+1)/n),r));
+      });
+      return waterPipeCache;
+    }
+    function pipeBoxes(){return [...gasPipeBoxes(),...waterPipeBoxes()];}
+    function suspensionEquipment(x,z,h=0){
+      return [.15,1.45].flatMap(dx=>[
+        {part:'提升架',min:[x+dx-.035,.50+h,z+.16],max:[x+dx+.035,1.85+h,z+.57],tone:'boat'},
+        {part:'防墮扣',min:[x+dx-.06,1.61+h,z+.20],max:[x+dx+.06,1.83+h,z+.34],tone:'safety'},
+        {part:'提升機馬達',min:[x+dx-.065,.88+h,z+.38],max:[x+dx+.135,1.24+h,z+.60],tone:'motor'}
+      ]);
+    }
+    function suspensionWires(x,z,h){
+      return [[.85,x+.15],[2.15,x+1.45]].flatMap(([ax,bx])=>[
+        {kind:'safety',points:[[ax,anchorHeight,1.575],[bx,1.83+h,z+.27],[bx,1.61+h,z+.27],[bx,.08+h,z+.27]]},
+        {kind:'motor',points:[[ax+.045,anchorHeight,1.575],[bx+.035,1.24+h,z+.49],[bx+.035,.88+h,z+.49],[bx+.035,.08+h,z+.49]]}
+      ]);
     }
     function segmentHits(a,b,box,pad=.015){
       let lo=0,hi=1;
@@ -1359,20 +1395,17 @@ html>body{padding:0}</style>
       const occupied=occupiedBoxes(x,z,h);
       const cloth=clothPanelBoxes(x,z,h,e);
       const frames=frameBoxes(x,z,h,m);
-      const cables=[];
-      for(const [ax,bx]of [[.85,x+.15],[2.15,x+1.45]]){
-        cables.push([[ax,anchorHeight,1.575],[bx,1.76+h,z+.375]]);
-        cables.push([[ax+.045,anchorHeight,1.575],[bx+.035,1.33+h,z+.375]]);
-      }
+      const cables=suspensionWires(x,z,h).flatMap(({points})=>points.slice(1).map((b,i)=>[points[i],b]));
       const acObs=obs.filter(o=>o.kind==='unit'),rackObs=obs.filter(o=>o.kind==='rack');
       const acNearest=closestOccupied(occupied,acObs),rackNearest=closestOccupied(occupied,rackObs);
       const acDistance=acNearest.distance,rackDistance=rackNearest.distance;
       const clothHit=obs.some(o=>cloth.some(panel=>boxDistance(panel,o)<.005));
       const frameHit=obs.some(o=>frames.some(frame=>boxDistance(frame,o)<.005));
       const cableHit=obs.some(o=>cables.some(([a,b])=>segmentHits(a,b,o)));
-      const pipeHit=pipeBoxes().some(o=>[...occupied,...cloth,...frames].some(b=>boxDistance(b,o)<.005)||cables.some(([a,b])=>segmentHits(a,b,o)));
+      const hitsPipe=o=>[...occupied,...cloth,...frames].some(b=>boxDistance(b,o)<.005)||cables.some(([a,b])=>segmentHits(a,b,o));
+      const gasPipeHit=gasPipeBoxes().some(hitsPipe),waterPipeHit=waterPipeBoxes().some(hitsPipe),pipeHit=gasPipeHit||waterPipeHit;
       const wallHit=x-e<0||x+1.6+e>3||z-e<.005||z<.3-1e-8;
-      return {acDistance,rackDistance,acNearest,rackNearest,clothHit,frameHit,cableHit,pipeHit,wallHit,clear:acDistance>=.3-1e-8&&rackDistance>=.15-1e-8&&!clothHit&&!frameHit&&!cableHit&&!pipeHit&&!wallHit};
+      return {acDistance,rackDistance,acNearest,rackNearest,clothHit,frameHit,cableHit,pipeHit,gasPipeHit,waterPipeHit,wallHit,clear:acDistance>=.3-1e-8&&rackDistance>=.15-1e-8&&!clothHit&&!frameHit&&!cableHit&&!pipeHit&&!wallHit};
     }
     function axisBounds(axis){
       const current=Number((axis==='x'?sx:sz).value),lo=axis==='x'?300:0,hi=axis==='x'?1100:900;
@@ -1407,9 +1440,9 @@ html>body{padding:0}</style>
       const y0=.69+h,y1=1.15+h,t=.035;
       // Three faces only: wall-facing, left and right. The street-facing face is open.
       return [
-        {min:[x-e,y0,z-e],max:[x+1.6+e,y1,z-e+t]},
-        {min:[x-e,y0,z-e],max:[x-e+t,y1,z+.75+e]},
-        {min:[x+1.6+e-t,y0,z-e],max:[x+1.6+e,y1,z+.75+e]}
+        {min:[x-e,y0,z-e],max:[x+1.6+e,y1,z+t]},
+        {min:[x-e,y0,z-e],max:[x+t,y1,z+.75]},
+        {min:[x+1.6-t,y0,z-e],max:[x+1.6+e,y1,z+.75]}
       ];
     }
     function catchCloth(x,z){
@@ -1417,7 +1450,7 @@ html>body{padding:0}</style>
       // Its dimensions, hinge height and folding kinematics are assumptions, not a measured replica.
       const t=Number(fold.value)/100,e=clothExtension(),iy=.83,oy=iy+.30*Math.cos(t*Math.PI/2)+.10*Math.sin(t*Math.PI/2);
       const inner=[[x,iy,z],[x+1.6,iy,z],[x+1.6,iy,z+.75],[x,iy,z+.75]];
-      const outer=[[x-e,oy,z-e],[x+1.6+e,oy,z-e],[x+1.6+e,oy,z+.75+e],[x-e,oy,z+.75+e]];
+      const outer=[[x-e,oy,z-e],[x+1.6+e,oy,z-e],[x+1.6+e,oy,z+.75],[x-e,oy,z+.75]];
       const lerp=(a,b,t)=>a.map((n,i)=>n+(b[i]-n)*t);
       for(let side=0;side<4;side++){
         if(side===2)continue; // the street-facing edge is intentionally open
@@ -1471,19 +1504,24 @@ html>body{padding:0}</style>
       }
       // Service pipe: contextual only, not used as an anchor.
       drawOffset=0;
-      for(let y=facadeBottom;y<facadeTop;y+=.30)rod([1.5,y,.16],[1.5,Math.min(y+.30,facadeTop),.16],palette.pipe,.032);
+      for(let y=facadeBottom;y<facadeTop;y+=.30)rod([1.5,y,.16],[1.5,Math.min(y+.30,facadeTop),.16],palette.fg,.032);
       for(const floor of floorOffsets){
       drawOffset=floor;
       for(const y of [.15,1.0,2.5])box(1.445,y,.04,.11,.04,.15,palette.border);
       box(1.445,1.89,.11,.11,.13,.10,palette.fg);
       // Branches run to both facade corners, along the side walls, then turn into them.
-      rod([1.445,1.055,.16],[1.555,1.055,.16],palette.pipe,.038);
+      rod([1.445,1.055,.16],[1.555,1.055,.16],palette.fg,.038);
       for(const {sign,points} of branchPaths()){
-        for(let i=1;i<points.length;i++)rod(points[i-1],points[i],palette.pipe,.022);
+        for(let i=1;i<points.length;i++)rod(points[i-1],points[i],palette.fg,.022);
         const joint=sign<0?.68:2.32;
-        rod([joint-.022,1.055,.16],[joint+.022,1.055,.16],palette.pipe,.029);
+        rod([joint-.022,1.055,.16],[joint+.022,1.055,.16],palette.fg,.029);
         box(joint-.04,1.025,.025,.08,.06,.11,palette.border);
       }
+      }
+      drawOffset=0;
+      for(const {a,b,r} of waterSegments()){
+        const n=Math.ceil(Math.hypot(...b.map((v,i)=>v-a[i]))/.20);
+        for(let j=0;j<n;j++)rod(a.map((v,i)=>v+(b[i]-v)*j/n),a.map((v,i)=>v+(b[i]-v)*(j+1)/n),palette.pipe,r);
       }
       // Air conditioner envelope: inward width is adjustable; height and depth remain illustrative.
       const acWidth=Number(ac.value)/1000;
@@ -1553,8 +1591,19 @@ html>body{padding:0}</style>
         for(const xx of [x,x+1.6])rod([xx,yy,z],[xx,yy,z+.75],palette.boat,.019);
       }
       for(const xx of [x+.15,x+1.45]){
-        rod([xx,.50,z+.375],[xx,1.76,z+.375],palette.boat,.029);
-        box(xx-.08,1.29,z+.285,.16,.22,.18,palette.fg);
+        for(const zz of [z+.18,z+.55])rod([xx,.50,zz],[xx,1.85,zz],palette.boat,.022);
+        rod([xx,1.85,z+.18],[xx,1.85,z+.55],palette.boat,.022);
+      }
+      for(const p of suspensionEquipment(x,z).filter(p=>p.tone!=='boat')){
+        box(...p.min,...p.max.map((v,i)=>v-p.min[i]),palette[p.tone]);
+        const cx=(p.min[0]+p.max[0])/2,cy=(p.min[1]+p.max[1])/2;
+        if(p.tone==='safety'){
+          rod([cx,cy,p.max[2]],[cx+.035,cy+.09,p.max[2]],palette.fg,.013);
+          sphere([cx+.035,cy+.09,p.max[2]],.022,palette.fg);
+        }else{
+          rod([cx,cy,p.max[2]-.07],[cx,cy,p.max[2]],shade(palette.motor,.75),.085);
+          for(const dy of [-.04,0,.04])line([cx-.055,cy+dy,p.max[2]+.001],[cx+.055,cy+dy,p.max[2]+.001],palette.fg,.8);
+        }
       }
       catchCloth(x,z);
       // Roof anchors stay at the same coordinates. Cable upper lengths are schematic.
@@ -1563,11 +1612,12 @@ html>body{padding:0}</style>
         const [ax,bx]=pair;
         box(ax-.11,anchorHeight+.02,1.495,.22,.055,.16,palette.fg);
         sphere([ax,anchorHeight,1.575],.025,palette.fg);
-        // Two independent wires per side: green fall-arrest line and purple motor line.
-        line([ax,anchorHeight,1.575],[bx,1.76+verticalOffset,z+.375],palette.safety,2);
-        line([ax+.045,anchorHeight,1.575],[bx+.035,1.33+verticalOffset,z+.375],palette.motor,2);
-        sphere([bx,1.76+verticalOffset,z+.375],.055,palette.safety);
-        sphere([bx+.035,1.33+verticalOffset,z+.375],.055,palette.motor);
+        sphere([ax+.045,anchorHeight,1.575],.018,palette.fg);
+      }
+      // Neutral steel wires pass through the distinct lock/hoist bodies and emerge below.
+      for(const {points} of suspensionWires(x,z,verticalOffset))for(let i=1;i<points.length;i++){
+        const a=points[i-1],b=points[i],n=Math.ceil(Math.hypot(...b.map((v,k)=>v-a[k]))/.20);
+        for(let j=0;j<n;j++)line(a.map((v,k)=>v+(b[k]-v)*j/n),a.map((v,k)=>v+(b[k]-v)*(j+1)/n),palette.fg,1.5);
       }
       // Both occupancy states stay inside the guardrails and move with the basket.
       drawOffset=verticalOffset;
@@ -1860,7 +1910,7 @@ html>body{padding:0}</style>
 function comparisonClearance(s){
   const distance=v=>Number.isFinite(v)?Math.round(v*1000)+' mm':'無';
   const reasons=[];
-  for(const [key,label] of [['clothHit','帆布'],['frameHit','支架'],['cableHit','吊纜'],['pipeHit','喉管'],['wallHit','牆面'],['selfHit','機構內部']])if(s[key])reasons.push(label);
+  for(const [key,label] of [['clothHit','帆布'],['frameHit','支架'],['cableHit','吊纜'],['gasPipeHit','氣喉'],['waterPipeHit','水管'],['wallHit','牆面'],['selfHit','機構內部']])if(s[key])reasons.push(label);
   if(s.balance&&!s.balance.fits)reasons.push('配重行程');
   return `船身／人員至晾架 ${distance(s.rackDistance)}（目標 ≥150 mm）· 至側面設備 ${distance(s.acDistance)}（目標 ≥300 mm）。${s.clear?'此位置通過簡化模型條件。':'此位置不符合模型條件。'}${reasons.length?'需檢查：'+reasons.join('、')+'。':''}`;
 }

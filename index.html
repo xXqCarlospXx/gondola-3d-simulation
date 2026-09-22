@@ -1083,7 +1083,7 @@ html>body{padding:0}</style>
   <label class="form-label">支架收起程序 <output id="g3-mech-percent">0</output>%<input id="g3-mech" class="form-range" type="range" min="0" max="100" step="1" value="0" aria-label="支架收起程序，0為展開扣接，100為收妥"></label>
   <button class="btn" id="g3-mech-play" type="button">播放收起支架</button>
 </div><div id="g3-mech-status" class="text-small"></div></details>
-  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">左右各有獨立防墮扣及提升機／馬達的實體外殼，兩條中性色鋼絲繩分別穿過兩個裝置並由下方伸出。綠、紫色用於識別裝置。</div><div class="text-small">中央氣喉接左右短分支，再向上轉彎。白色斜分支各自接左／右水管，靠中央的一端上彎後再轉入正面牆身，與中央水管及氣喉分開。三條水管保留；牆內走線不作推定。水管直徑暫用 130 mm、分支 70 mm，離牆中心距 280 mm；位置、坡度及裝置外廓未實測。左右側牆設窗戶及彎喉，不設晾衫架；下方白色橫喉接各自外側水管，末端上彎後轉入各自側牆。熱水爐排氣管出口採兩級階梯外廓，頂部與窗頂對齊，下接彎喉。階梯尺寸及未顯示接駁為示意，須實測核對。橙色帆布只在靠牆及左右三面，街外面開放。</div><div class="text-small">外牆扣接位置為假設，升降前收妥支架，到達目標高度後重新展開。每個工作高度的可靠支點、扣接承載及拆裝方式仍需工程設計。</div></details>
+  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">左右各有獨立防墮扣及提升機／馬達的實體外殼，兩條中性色鋼絲繩分別穿過兩個裝置並由下方伸出。綠、紫色用於識別裝置。</div><div class="text-small">中央氣喉接左右短分支，再向上轉彎。白色斜分支各自接左／右水管，靠中央的一端上彎後再轉入正面牆身，與中央水管及氣喉分開。三條水管保留；牆內走線不作推定。水管直徑暫用 130 mm、分支 70 mm，離牆中心距 280 mm；位置、坡度及裝置外廓未實測。左右側牆設窗戶及彎喉，不設晾衫架；下方白色橫喉接各自外側水管，末端上彎後轉入各自側牆。熱水爐排氣管出口採兩級階梯外廓，頂部與窗頂對齊；下方 L 形喉獨立設置，兩端彎入側牆，與排氣管出口分離。階梯尺寸及未顯示接駁為示意，須實測核對。橙色帆布只在靠牆及左右三面，街外面開放。</div><div class="text-small">外牆扣接位置為假設，升降前收妥支架，到達目標高度後重新展開。每個工作高度的可靠支點、扣接承載及拆裝方式仍需工程設計。</div></details>
   <div class="text-small">幾何及尺寸為示意假設，未驗證結構、抗風及載人施工安全。</div>
   <div hidden><input id="g3-x" type="range" min="300" max="1100" step="any" value="700"><input id="g3-z" type="range" min="0" max="900" step="any" value="0">
 <input id="g3-height-slider" type="range" min="-3000" max="3000" step="10" value="0">
@@ -1236,16 +1236,17 @@ html>body{padding:0}</style>
         return {kind:'unit',side,floor,min:[side===0?0:3-w,y,1.05],max:[side===0?w:3,y+h,1.61]};
       });
     }
-    function sideFlueSegments(side,floor){
-      if(Number(ac.value)<=0)return [];
-      const u=Math.min(.10,Number(ac.value)/1000*.25),p=(y,v)=>sidePoint(side,u,y+floor,v);
-      // Keep the pipe seated in the bottom remaining step when the outlet profile changes.
-      const outletBottom=flueParts(side,floor).at(-1).min[1]-floor;
-      const points=[p(outletBottom+.015,1.33),p(1.14,1.33)];
+    function sideBentPipeSegments(side,floor){
+      const p=(y,v)=>sidePoint(side,.10,y+floor,v),direction=side===0?-1:1,wallX=side===0?0:3;
+      // Independent L-shaped pipe: both ends enter the side wall, clear of the flue outlet.
+      const upper=[p(1.65,1.33)];
+      turnWaterIntoWall(upper,0,direction,wallX,.06);
+      const points=[...upper.reverse(),p(1.14,1.33)];
       for(let j=1;j<=10;j++){const t=j*Math.PI/20;points.push(p(1.14-.06*Math.sin(t),1.39-.06*Math.cos(t)));}
       points.push(p(1.08,1.70));
       for(let j=1;j<=10;j++){const t=j*Math.PI/20;points.push(p(1.14-.06*Math.cos(t),1.70+.06*Math.sin(t)));}
       points.push(p(1.20,1.76));
+      turnWaterIntoWall(points,0,direction,wallX,.06);
       return points.slice(1).map((b,i)=>({a:points[i],b,r:.022}));
     }
     function turnWaterIntoWall(points,axis,direction,wallCoordinate,r){
@@ -1280,7 +1281,7 @@ html>body{padding:0}</style>
         }
         for(const side of [0,1]){
           result.push(...flueParts(side,floor,a));
-          for(const s of sideFlueSegments(side,floor))result.push({kind:'unit',side,...segmentBox(s.a,s.b,s.r)});
+          for(const s of sideBentPipeSegments(side,floor))result.push({kind:'sidePipe',side,...segmentBox(s.a,s.b,s.r)});
         }
         return result.map(o=>({...o,floor}));
       });
@@ -1450,7 +1451,7 @@ html>body{padding:0}</style>
       const frameHit=obs.some(o=>frames.some(frame=>boxDistance(frame,o)<.005));
       const cableHit=obs.some(o=>cables.some(([a,b])=>segmentHits(a,b,o)));
       const hitsPipe=o=>[...occupied,...cloth,...frames].some(b=>boxDistance(b,o)<.005)||cables.some(([a,b])=>segmentHits(a,b,o));
-      const gasPipeHit=gasPipeBoxes().some(hitsPipe),waterPipeHit=waterPipeBoxes().some(hitsPipe),pipeHit=gasPipeHit||waterPipeHit;
+      const gasPipeHit=gasPipeBoxes().some(hitsPipe),waterPipeHit=waterPipeBoxes().some(hitsPipe),pipeHit=gasPipeHit||waterPipeHit||obs.filter(o=>o.kind==='sidePipe').some(hitsPipe);
       const wallHit=x-e<0||x+1.6+e>3||z-e<.005||z<.3-1e-8;
       return {acDistance,rackDistance,acNearest,rackNearest,clothHit,frameHit,cableHit,pipeHit,gasPipeHit,waterPipeHit,wallHit,clear:acDistance>=.3-1e-8&&rackDistance>=.15-1e-8&&!clothHit&&!frameHit&&!cableHit&&!pipeHit&&!wallHit};
     }
@@ -1585,9 +1586,11 @@ html>body{padding:0}</style>
             const xx=side===0?p.max[0]+.001:p.min[0]-.001;
             line([xx,p.min[1],p.min[2]],[xx,p.min[1],p.max[2]],palette.fg,.8,.7);
           }
-          for(const s of sideFlueSegments(side,floor))rod(s.a,s.b,palette.border,s.r);
+
         }
       }
+      drawOffset=0;
+      for(const floor of floorOffsets)for(const side of [0,1])for(const s of sideBentPipeSegments(side,floor))rod(s.a,s.b,palette.border,s.r);
       // Only dashed site markers stay behind: these are assumed structural locations, not installed anchors.
       drawOffset=0;
       for(const hh of floorOffsets)for(const xx of [.04,2.96])for(const zz of [.75,2.15]){

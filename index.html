@@ -174,9 +174,13 @@ html > body {
   line-height: var(--line-height-normal);
 }
 
+.cursor-interaction {
+  cursor: var(--cursor-interaction, pointer);
+}
+
 a {
   color: color-mix(in srgb, var(--viz-accent) 80%, var(--viz-text) 20%);
-  cursor: pointer;
+  cursor: var(--cursor-interaction, pointer);
   font-weight: var(--font-weight-medium, 500);
   text-decoration: none;
   text-underline-offset: 2px;
@@ -527,7 +531,7 @@ small,
 }
 
 a.btn {
-  cursor: pointer;
+  cursor: var(--cursor-interaction, pointer);
   text-decoration: none;
 }
 
@@ -1025,8 +1029,8 @@ html>body{padding:0}</style>
 </head>
 <body>
 <div id="gondola-3d">
-  <div class="viz-row"><strong>吊船方案比較</strong><span class="text-small">方案 A · 外牆扣接架</span></div>
-  <nav class="viz-row" aria-label="比較方案"><a class="btn btn-primary" href="https://xxqcarlospxx.github.io/gondola-3d-simulation/" aria-current="page">方案 A · 外牆扣接架</a><a class="btn" href="https://xxqcarlospxx.github.io/gondola-3d-simulation/no-building-anchors.html" >方案 B · 懸吊承托架＋配重</a></nav>
+  <div class="viz-row"><strong>吊船 3D 模型</strong><span class="text-small">方案 A · 外牆扣接架</span></div>
+  <nav class="viz-row" aria-label="模型頁面"><a class="btn btn-primary" href="https://xxqcarlospxx.github.io/gondola-3d-simulation/" aria-current="page">方案 A · 外牆扣接架</a></nav>
   <div class="viz-row" data-ui-group="view">
     <button type="button" class="btn" id="g3-theme-toggle" aria-label="深色模式" aria-pressed="false">深色模式：關</button>
     <button type="button" class="btn" id="g3-distance-toggle" aria-pressed="false">尺寸顯示：關</button>
@@ -1069,7 +1073,7 @@ html>body{padding:0}</style>
   </div>
   <div class="comparison-scene">
   <div id="g3-stage"><canvas id="g3-canvas" role="img" aria-label="方案 A · 外牆扣接架，三層外牆及吊船的可旋轉三維幾何演示，未驗證載人施工安全。"></canvas></div>
-  <div class="viz-row text-small"><span>藍：工作船</span><span>橙：原有接物帆布</span><span>粉：扣接架／左右導軌</span><span>綠：滑台</span></div>
+  <div class="viz-row text-small"><span>藍：工作船</span><span>橙：三面原有接物帆布</span><span>粉：扣接架／左右導軌</span><span>綠：滑台</span><span>綠圓：防墮扣</span><span>紫圓：motor</span><span>白：水管</span></div>
   <div id="g3-distance-summary" class="text-small" hidden></div>
   <div id="ui-clearance" class="text-small"></div>
   </div>
@@ -1079,14 +1083,14 @@ html>body{padding:0}</style>
   <label class="form-label">支架收起程序 <output id="g3-mech-percent">0</output>%<input id="g3-mech" class="form-range" type="range" min="0" max="100" step="1" value="0" aria-label="支架收起程序，0為展開扣接，100為收妥"></label>
   <button class="btn" id="g3-mech-play" type="button">播放收起支架</button>
 </div><div id="g3-mech-status" class="text-small"></div></details>
-  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">外牆扣接位置為假設，升降前收妥支架，到達目標高度後重新展開。每個工作高度的可靠支點、扣接承載及拆裝方式仍需工程設計。</div></details>
+  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">左右各兩條吊船鋼絲繩：綠色標示防墮扣，紫色標示 motor。白色水管沿外牆及左右牆角示意，橙色接物帆布只在靠牆、左側及右側展開，街外面不設帆布。</div><div class="text-small">外牆扣接位置為假設，升降前收妥支架，到達目標高度後重新展開。每個工作高度的可靠支點、扣接承載及拆裝方式仍需工程設計。</div></details>
   <div class="text-small">幾何及尺寸為示意假設，未驗證結構、抗風及載人施工安全。</div>
   <div hidden><input id="g3-x" type="range" min="300" max="1100" step="any" value="700"><input id="g3-z" type="range" min="0" max="900" step="any" value="0">
 <input id="g3-height-slider" type="range" min="-3000" max="3000" step="10" value="0">
 <select id="g3-height"><option value="3">上</option><option value="2.2">上中</option><option value="0" selected>中</option><option value="-0.8">中下</option><option value="-3">下</option></select>
 <button id="g3-height-play" type="button"></button><button id="g3-skip" type="button"></button><button id="g3-play" type="button"></button><output id="g3-height-target"></output><output id="g3-height-value"></output><output id="g3-height-hint"></output><output id="g3-height-status"></output><output id="g3-forward-limit"></output><output id="g3-x-value"></output><output id="g3-travel"></output><output id="g3-depth"></output><output id="g3-depth-max"></output><output id="g3-ac-value"></output><output id="g3-extension"></output><output id="g3-distance-hint"></output><output id="g3-readout"></output><output id="g3-clearance"></output><output id="g3-ac-note"></output><output id="g3-cloth-clearance"></output><output id="g3-overlap"></output></div>
   <style>
-    #gondola-3d { color:var(--foreground); --g3-boat-color:light-dark(#3489d5,#72b7ef); --g3-frame-color:light-dark(#df72ac,#f19ac7); --g3-cloth-color:light-dark(#ed8b20,#ffad4b); }
+    #gondola-3d { color:var(--foreground); --g3-boat-color:light-dark(#3489d5,#72b7ef); --g3-frame-color:light-dark(#df72ac,#f19ac7); --g3-cloth-color:light-dark(#ed8b20,#ffad4b); --g3-safety-color:light-dark(#1c9b55,#4fd47e); --g3-motor-color:light-dark(#a22bd4,#d58aff); --g3-pipe-color:light-dark(#d6e1e7,#ffffff); }
     #gondola-3d[data-g3-theme] {
       background:var(--background);
       --background:light-dark(rgb(255 255 255),rgb(24 24 24));
@@ -1112,6 +1116,7 @@ html>body{padding:0}</style>
     #gondola-3d .g3-slide { background:var(--viz-series-3); }
     #gondola-3d .g3-cloth { background:var(--g3-cloth-color); }
   
+
     #gondola-3d { display:grid; gap:12px; }
     #gondola-3d .comparison-workspace { display:grid; grid-template-columns:minmax(0,1fr); gap:20px; }
     #gondola-3d .comparison-controls, #gondola-3d .comparison-scene { min-width:0; display:grid; align-content:start; gap:12px; }
@@ -1173,7 +1178,7 @@ html>body{padding:0}</style>
     const probe=document.createElement('span');probe.style.display='none';root.appendChild(probe);
     const colorCanvas=document.createElement('canvas');colorCanvas.width=1;colorCanvas.height=1;const colorCtx=colorCanvas.getContext('2d',{willReadFrequently:true});
     function color(name){colorCtx.clearRect(0,0,1,1);probe.style.color='var(--background)';colorCtx.fillStyle=getComputedStyle(probe).color;colorCtx.fillRect(0,0,1,1);probe.style.color=`var(${name})`;colorCtx.fillStyle=getComputedStyle(probe).color;colorCtx.fillRect(0,0,1,1);const p=colorCtx.getImageData(0,0,1,1).data;return `rgb(${p[0]},${p[1]},${p[2]})`;}
-    function colors(){palette={fg:color('--foreground'),bg:color('--background'),muted:color('--muted'),border:color('--border'),boat:color('--g3-boat-color'),frame:color('--g3-frame-color'),slide:color('--viz-series-3'),cloth:color('--g3-cloth-color')};}
+    function colors(){palette={fg:color('--foreground'),bg:color('--background'),muted:color('--muted'),border:color('--border'),boat:color('--g3-boat-color'),frame:color('--g3-frame-color'),slide:color('--viz-series-3'),cloth:color('--g3-cloth-color'),safety:color('--g3-safety-color'),motor:color('--g3-motor-color'),pipe:color('--g3-pipe-color')};}
     function shade(c,f){const nums=c.match(/[\d.]+/g);if(!nums||nums.length<3)return c;return `rgb(${nums.slice(0,3).map(v=>Math.min(255,Math.round(Number(v)*f))).join(',')})`;}
     function verticalView(){return {lo:Math.min(facadeBottom,verticalOffset-.85),hi:Math.max(facadeTop+.10,anchorHeight+.15)};}
     function camera(p){const v=verticalView(),x=p[0]-1.5,y=p[1]-(v.lo+v.hi)/2,z=p[2]-1.0;const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);return [cy*x-sy*z,cp*y-sp*(sy*x+cy*z),sp*y+cp*(sy*x+cy*z)];}
@@ -1352,7 +1357,7 @@ html>body{padding:0}</style>
     function spatialState(x=Number(sx.value)/1000,z=1.2-Number(sz.value)/1000,h=verticalOffset){
       const obs=obstacleBoxes(),m=mechanism(),e=clothExtension();
       const occupied=occupiedBoxes(x,z,h);
-      const cloth={min:[x-e,.69+h,z-e],max:[x+1.6+e,1.15+h,z+.75+e]};
+      const cloth=clothPanelBoxes(x,z,h,e);
       const frames=frameBoxes(x,z,h,m);
       const cables=[];
       for(const [ax,bx]of [[.85,x+.15],[2.15,x+1.45]]){
@@ -1362,10 +1367,10 @@ html>body{padding:0}</style>
       const acObs=obs.filter(o=>o.kind==='unit'),rackObs=obs.filter(o=>o.kind==='rack');
       const acNearest=closestOccupied(occupied,acObs),rackNearest=closestOccupied(occupied,rackObs);
       const acDistance=acNearest.distance,rackDistance=rackNearest.distance;
-      const clothHit=obs.some(o=>boxDistance(cloth,o)<.005);
+      const clothHit=obs.some(o=>cloth.some(panel=>boxDistance(panel,o)<.005));
       const frameHit=obs.some(o=>frames.some(frame=>boxDistance(frame,o)<.005));
       const cableHit=obs.some(o=>cables.some(([a,b])=>segmentHits(a,b,o)));
-      const pipeHit=pipeBoxes().some(o=>[...occupied,cloth,...frames].some(b=>boxDistance(b,o)<.005)||cables.some(([a,b])=>segmentHits(a,b,o)));
+      const pipeHit=pipeBoxes().some(o=>[...occupied,...cloth,...frames].some(b=>boxDistance(b,o)<.005)||cables.some(([a,b])=>segmentHits(a,b,o)));
       const wallHit=x-e<0||x+1.6+e>3||z-e<.005||z<.3-1e-8;
       return {acDistance,rackDistance,acNearest,rackNearest,clothHit,frameHit,cableHit,pipeHit,wallHit,clear:acDistance>=.3-1e-8&&rackDistance>=.15-1e-8&&!clothHit&&!frameHit&&!cableHit&&!pipeHit&&!wallHit};
     }
@@ -1398,6 +1403,15 @@ html>body{padding:0}</style>
       return `${bounds.fits?`向前上限 ${bounds.max} mm；移至 ${probe} mm 時`:'目前位置受限'}：${reasons.join('；')||'未通過簡化間隙檢查'}。`;
     }
     function clothExtension(){const a=Number(fold.value)/100*Math.PI/2;return Number(extent.value)/1000*Math.sin(a)+.02*Math.cos(a);}
+    function clothPanelBoxes(x,z,h,e=clothExtension()){
+      const y0=.69+h,y1=1.15+h,t=.035;
+      // Three faces only: wall-facing, left and right. The street-facing face is open.
+      return [
+        {min:[x-e,y0,z-e],max:[x+1.6+e,y1,z-e+t]},
+        {min:[x-e,y0,z-e],max:[x-e+t,y1,z+.75+e]},
+        {min:[x+1.6+e-t,y0,z-e],max:[x+1.6+e,y1,z+.75+e]}
+      ];
+    }
     function catchCloth(x,z){
       // Existing foldable catch cloth, illustrated independently of the proposed positioning frame.
       // Its dimensions, hinge height and folding kinematics are assumptions, not a measured replica.
@@ -1406,6 +1420,7 @@ html>body{padding:0}</style>
       const outer=[[x-e,oy,z-e],[x+1.6+e,oy,z-e],[x+1.6+e,oy,z+.75+e],[x-e,oy,z+.75+e]];
       const lerp=(a,b,t)=>a.map((n,i)=>n+(b[i]-n)*t);
       for(let side=0;side<4;side++){
+        if(side===2)continue; // the street-facing edge is intentionally open
         const next=(side+1)%4,n=side%2===0?12:6;
         for(let j=0;j<n;j++){
           const u=j/n,v=(j+1)/n;
@@ -1456,17 +1471,17 @@ html>body{padding:0}</style>
       }
       // Service pipe: contextual only, not used as an anchor.
       drawOffset=0;
-      for(let y=facadeBottom;y<facadeTop;y+=.30)rod([1.5,y,.16],[1.5,Math.min(y+.30,facadeTop),.16],palette.fg,.032);
+      for(let y=facadeBottom;y<facadeTop;y+=.30)rod([1.5,y,.16],[1.5,Math.min(y+.30,facadeTop),.16],palette.pipe,.032);
       for(const floor of floorOffsets){
       drawOffset=floor;
       for(const y of [.15,1.0,2.5])box(1.445,y,.04,.11,.04,.15,palette.border);
       box(1.445,1.89,.11,.11,.13,.10,palette.fg);
       // Branches run to both facade corners, along the side walls, then turn into them.
-      rod([1.445,1.055,.16],[1.555,1.055,.16],palette.fg,.038);
+      rod([1.445,1.055,.16],[1.555,1.055,.16],palette.pipe,.038);
       for(const {sign,points} of branchPaths()){
-        for(let i=1;i<points.length;i++)rod(points[i-1],points[i],palette.fg,.022);
+        for(let i=1;i<points.length;i++)rod(points[i-1],points[i],palette.pipe,.022);
         const joint=sign<0?.68:2.32;
-        rod([joint-.022,1.055,.16],[joint+.022,1.055,.16],palette.fg,.029);
+        rod([joint-.022,1.055,.16],[joint+.022,1.055,.16],palette.pipe,.029);
         box(joint-.04,1.025,.025,.08,.06,.11,palette.border);
       }
       }
@@ -1548,8 +1563,11 @@ html>body{padding:0}</style>
         const [ax,bx]=pair;
         box(ax-.11,anchorHeight+.02,1.495,.22,.055,.16,palette.fg);
         sphere([ax,anchorHeight,1.575],.025,palette.fg);
-        line([ax,anchorHeight,1.575],[bx,1.76+verticalOffset,z+.375],palette.fg,2);
-        line([ax+.045,anchorHeight,1.575],[bx+.035,1.33+verticalOffset,z+.375],palette.fg,1, .7,[4,3]);
+        // Two independent wires per side: green fall-arrest line and purple motor line.
+        line([ax,anchorHeight,1.575],[bx,1.76+verticalOffset,z+.375],palette.safety,2);
+        line([ax+.045,anchorHeight,1.575],[bx+.035,1.33+verticalOffset,z+.375],palette.motor,2);
+        sphere([bx,1.76+verticalOffset,z+.375],.055,palette.safety);
+        sphere([bx+.035,1.33+verticalOffset,z+.375],.055,palette.motor);
       }
       // Both occupancy states stay inside the guardrails and move with the basket.
       drawOffset=verticalOffset;
@@ -1941,7 +1959,8 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden&&comparison
     applyTheme(systemTheme.matches);
     resize();update();
   })();
-  </script>
+  
+</script>
 </div>
 
 </body>

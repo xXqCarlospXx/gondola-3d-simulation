@@ -1065,7 +1065,7 @@ html>body{padding:0}</style>
     <button type="button" class="btn" id="ui-skip" disabled>跳過動畫</button>
   </div>
   <div class="viz-controls" data-ui-group="dimensions">
-    <label class="form-label" id="g3-ac-setting"><span>側面設備各向內佔位 <output id="ui-ac-value">400</output> mm（假設）</span><input id="g3-ac" class="form-range" type="range" min="0" max="600" step="10" value="400" aria-label="側面設備佔位，毫米"></label>
+    <label class="form-label" id="g3-ac-setting"><span>熱水爐排氣管各向內佔位 <output id="ui-ac-value">400</output> mm（假設）</span><input id="g3-ac" class="form-range" type="range" min="0" max="600" step="10" value="400" aria-label="熱水爐排氣管佔位，毫米"></label>
     <label class="form-label" id="g3-extent-setting"><span>帆布每邊伸出 <output id="ui-extent-value">250</output> mm（未實測）</span><input id="g3-extent" class="form-range" type="range" min="100" max="500" step="10" value="250" aria-label="帆布每邊伸出，毫米"></label>
   </div>
   <div class="text-small">放開滑桿後慢速移動；可用範圍依各方案的模型檢查而定。</div>
@@ -1083,7 +1083,7 @@ html>body{padding:0}</style>
   <label class="form-label">支架收起程序 <output id="g3-mech-percent">0</output>%<input id="g3-mech" class="form-range" type="range" min="0" max="100" step="1" value="0" aria-label="支架收起程序，0為展開扣接，100為收妥"></label>
   <button class="btn" id="g3-mech-play" type="button">播放收起支架</button>
 </div><div id="g3-mech-status" class="text-small"></div></details>
-  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">左右各有獨立防墮扣及提升機／馬達的實體外殼，兩條中性色鋼絲繩分別穿過兩個裝置並由下方伸出。綠、紫色用於識別裝置。</div><div class="text-small">原有中央氣喉及左右分支保留。新增左、中、右三條白色水管及各層斜向分支；中間水管位於氣喉旁，避免重疊。水管直徑暫用 130 mm、分支 70 mm，離牆中心距 280 mm；位置、坡度及裝置外廓未實測。橙色帆布只在靠牆及左右三面，街外面開放。</div><div class="text-small">外牆扣接位置為假設，升降前收妥支架，到達目標高度後重新展開。每個工作高度的可靠支點、扣接承載及拆裝方式仍需工程設計。</div></details>
+  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">左右各有獨立防墮扣及提升機／馬達的實體外殼，兩條中性色鋼絲繩分別穿過兩個裝置並由下方伸出。綠、紫色用於識別裝置。</div><div class="text-small">中央氣喉接左右短分支，再向上轉彎。白色斜分支各自接左／右水管，靠中央的一端彎向上，與中央水管及氣喉分開。三條水管保留；圖中未顯示的末端接駁暫不推定。水管直徑暫用 130 mm、分支 70 mm，離牆中心距 280 mm；位置、坡度及裝置外廓未實測。左右側牆增加窗戶、圓角晾架及彎喉；下方白色橫喉接各自外側水管。熱水爐排氣管出口採三級階梯外廓，頂部與窗頂對齊，下接彎喉。階梯尺寸、側晾架 400 mm 伸出量及未顯示接駁為示意，須實測核對。橙色帆布只在靠牆及左右三面，街外面開放。</div><div class="text-small">外牆扣接位置為假設，升降前收妥支架，到達目標高度後重新展開。每個工作高度的可靠支點、扣接承載及拆裝方式仍需工程設計。</div></details>
   <div class="text-small">幾何及尺寸為示意假設，未驗證結構、抗風及載人施工安全。</div>
   <div hidden><input id="g3-x" type="range" min="300" max="1100" step="any" value="700"><input id="g3-z" type="range" min="0" max="900" step="any" value="0">
 <input id="g3-height-slider" type="range" min="-3000" max="3000" step="10" value="0">
@@ -1169,7 +1169,6 @@ html>body{padding:0}</style>
     const floorSpacing=3,floorOffsets=[-floorSpacing,0,floorSpacing];
     const facadeBottom=-3.15,facadeTop=6.0;
     const windowBottom=1.23,windowHeight=1.10,windowTop=windowBottom+windowHeight;
-    const deviceHeight=.48,deviceLift=windowTop-(.78+deviceHeight);
     const floorName=offset=>offset<0?'下層':offset>0?'上層':'中層';
     let workPose={x:Number(sx.value),z:Number(sz.value),cloth:Number(fold.value)};
     const clamp=v=>Math.max(0,Math.min(1,v));
@@ -1228,6 +1227,44 @@ html>body{padding:0}</style>
       ringMesh(px,pz,[[2.147,.125,.120],[2.166,.125,.120]],palette.boat);
       ringMesh(px,pz,[[2.166,.105,.100],[2.200,.096,.093],[2.235,.062,.061],[2.255,0,0]],palette.boat);
     }
+    // Mirrored side-wall details. Local u is distance out from the wall, v is along it.
+    const sidePoint=(side,u,y,v)=>[side===0?u:3-u,y,v];
+    function flueParts(side,floor,a=Number(ac.value)/1000){
+      if(a<=0)return [];
+      return [[1,.24,0],[.78,.16,.24],[.54,.145,.40]].map(([ratio,h,drop])=>{
+        const w=a*ratio,y=windowTop+floor-drop-h;
+        return {kind:'unit',side,floor,min:[side===0?0:3-w,y,1.05],max:[side===0?w:3,y+h,1.61]};
+      });
+    }
+    function sideRackSegments(side,floor){
+      const p=(u,y,v)=>sidePoint(side,u,y+floor,v),segments=[],points=[p(.025,1.2,.30),p(.32,1.2,.30)];
+      for(let j=1;j<=8;j++){const t=j*Math.PI/16;points.push(p(.32+.08*Math.sin(t),1.2,.38-.08*Math.cos(t)));}
+      points.push(p(.40,1.2,.89));
+      for(let j=1;j<=8;j++){const t=j*Math.PI/16;points.push(p(.32+.08*Math.cos(t),1.2,.89+.08*Math.sin(t)));}
+      points.push(p(.025,1.2,.97));
+      for(let i=1;i<points.length;i++)segments.push({a:points[i-1],b:points[i],r:.015});
+      segments.push({a:p(.025,1.2,.30),b:p(.025,1.2,.97),r:.015});
+      for(const v of [.42,.54,.66,.78,.89])segments.push({a:p(.025,1.2,v),b:p(.40,1.2,v),r:.006});
+      return segments;
+    }
+    function sideFlueSegments(side,floor){
+      if(Number(ac.value)<=0)return [];
+      const u=Math.min(.10,Number(ac.value)/1000*.25),p=(y,v)=>sidePoint(side,u,y+floor,v);
+      const points=[p(windowTop-.53,1.33),p(1.14,1.33)];
+      for(let j=1;j<=10;j++){const t=j*Math.PI/20;points.push(p(1.14-.06*Math.sin(t),1.39-.06*Math.cos(t)));}
+      points.push(p(1.08,1.70));
+      for(let j=1;j<=10;j++){const t=j*Math.PI/20;points.push(p(1.14-.06*Math.cos(t),1.70+.06*Math.sin(t)));}
+      points.push(p(1.20,1.76));
+      return points.slice(1).map((b,i)=>({a:points[i],b,r:.022}));
+    }
+    function sideWaterSegments(){
+      return floorOffsets.flatMap(floor=>[0,1].flatMap(side=>{
+        const p=(y,v)=>sidePoint(side,.12,y+floor,v),points=[p(.82,.28),p(.82,1.70)];
+        for(let j=1;j<=10;j++){const t=j*Math.PI/20;points.push(p(.88-.06*Math.cos(t),1.70+.06*Math.sin(t)));}
+        points.push(p(.98,1.76));
+        return points.slice(1).map((b,i)=>({a:points[i],b,r:.025}));
+      }));
+    }
     let obstacleCacheKey=null,obstacleCache=[];
     function obstacleBoxes(){
       const a=Number(ac.value)/1000;
@@ -1241,7 +1278,11 @@ html>body{padding:0}</style>
             result.push({kind:'rack',side,min:[xx-.04,1.15+floor,0],max:[xx+.04,1.25+floor,.06]});
           }
         }
-        if(a>0)result.push({kind:'unit',side:0,min:[0,.715+deviceLift+floor,1.05],max:[a,windowTop+floor,1.61]},{kind:'unit',side:1,min:[3-a,.715+deviceLift+floor,1.05],max:[3,windowTop+floor,1.61]});
+        for(const side of [0,1]){
+          result.push(...flueParts(side,floor,a));
+          for(const s of sideFlueSegments(side,floor))result.push({kind:'unit',side,...segmentBox(s.a,s.b,s.r)});
+          for(const s of sideRackSegments(side,floor))result.push({kind:'rack',side,...segmentBox(s.a,s.b,s.r)});
+        }
         return result.map(o=>({...o,floor}));
       });
       return obstacleCache;
@@ -1305,7 +1346,7 @@ html>body{padding:0}</style>
         for(let i=0;i<2;i++){
           const hit=closestOccupied(occupied,boxes.filter(o=>o.side===i));
           const nearest=hit.body?{...nearestPair(hit.body,hit.obstacle),floor:hit.floor,part:hit.part}:null;
-          dims.push({name:(nearest?floorName(nearest.floor):'')+(i===0?'左':'右')+(kind==='rack'?'晾架':'設備')+(hit.part?.startsWith('人員')?'·人':''),...(nearest||{distance:Infinity}),limit:kind==='rack'?.15:.3});
+          dims.push({name:(nearest?floorName(nearest.floor):'')+(i===0?'左':'右')+(kind==='rack'?'晾架':'排氣管')+(hit.part?.startsWith('人員')?'·人':''),...(nearest||{distance:Infinity}),limit:kind==='rack'?.15:.3});
         }
       }
       for(const [name,boxes] of [['氣喉',gasPipeBoxes()],['水管',waterPipeBoxes()]]){
@@ -1315,20 +1356,15 @@ html>body{padding:0}</style>
       return dims;
     }
     function branchPaths(){
-      // Both elbows lie in plan: around the facade corner, then into the side wall.
+      // Short gas branches turn upward beside the central riser, per the latest reference.
       return [-1,1].map(sign=>{
-        const corner=sign<0?.16:2.84,r=.075,y=1.055,startX=corner-sign*r;
+        const corner=1.5+sign*.34,r=.06,y=1.38,startX=corner-sign*r;
         const points=[[1.5,y,.16],[startX,y,.16]];
         for(let j=1;j<=10;j++){
           const a=j*Math.PI/20;
-          points.push([startX+sign*r*Math.sin(a),y,.16+r*(1-Math.cos(a))]);
+          points.push([startX+sign*r*Math.sin(a),y+r*(1-Math.cos(a)),.16]);
         }
-        points.push([corner,y,.60]);
-        for(let j=1;j<=10;j++){
-          const a=j*Math.PI/20;
-          points.push([corner+sign*r*(1-Math.cos(a)),y,.60+r*Math.sin(a)]);
-        }
-        points.push([sign<0?-.015:3.015,y,.675]);
+        points.push([corner,1.62,.16]);
         return {sign,points};
       });
     }
@@ -1337,24 +1373,35 @@ html>body{padding:0}</style>
       // Straight runs and conservative elbow envelopes share the rendered path.
       if(!sitePipeCache)sitePipeCache=[
         {min:[1.445,facadeBottom,.025],max:[1.555,facadeTop,.215]},
-        ...floorOffsets.flatMap(floor=>branchPaths().flatMap(({points})=>
-          [[0,1],[1,11],[11,12],[12,22],[22,23]].map(([start,end])=>{
-            const pts=points.slice(start,end+1);
-            return {min:[0,1,2].map(i=>Math.min(...pts.map(p=>p[i]))-.03+(i===1?floor:0)),max:[0,1,2].map(i=>Math.max(...pts.map(p=>p[i]))+.03+(i===1?floor:0))};
-          })
-        ))
+        ...floorOffsets.flatMap(floor=>branchPaths().flatMap(({points})=>points.slice(1).map((b,i)=>
+          segmentBox(points[i].map((v,k)=>v+(k===1?floor:0)),b.map((v,k)=>v+(k===1?floor:0)),.03)
+        )))
       ];
       return sitePipeCache;
     }
     // Added water network, separate from the existing central gas riser and gas branches.
     // Assumed diameters/offsets only: centre water riser sits beside the gas riser.
+    function waterBranchPaths(){
+      return floorOffsets.flatMap(h=>[-1,1].map(side=>{
+        const inward=-side,startX=side<0?.12:2.88,endX=side<0?1.04:1.96,r=.075;
+        const end=[endX,.98+h,.28],start=[startX,.74+h,.28];
+        const slope=Math.atan2(end[1]-start[1],Math.abs(end[0]-start[0]));
+        const centre=[endX-inward*r*Math.sin(slope),end[1]+r*Math.cos(slope),.28];
+        const points=[start,end];
+        for(let j=1;j<=12;j++){
+          const angle=slope+(Math.PI/2-slope)*j/12;
+          points.push([centre[0]+inward*r*Math.sin(angle),centre[1]-r*Math.cos(angle),.28]);
+        }
+        const tip=points.at(-1);points.push([tip[0],1.22+h,.28]);
+        // Reference shows an upturned end. Its concealed continuation is unknown.
+        return {side,floor:h,points,r:.035};
+      }));
+    }
     function waterSegments(){
       const segments=[];
       for(const x of [.12,1.32,2.88])segments.push({a:[x,facadeBottom,.28],b:[x,facadeTop,.28],r:.065});
-      for(const h of floorOffsets){
-        segments.push({a:[.12,.74+h,.28],b:[1.32,.98+h,.28],r:.035});
-        segments.push({a:[1.32,.98+h,.28],b:[2.88,.74+h,.28],r:.035});
-      }
+      for(const {points,r} of waterBranchPaths())for(let i=1;i<points.length;i++)segments.push({a:points[i-1],b:points[i],r});
+      segments.push(...sideWaterSegments());
       return segments;
     }
     let waterPipeCache;
@@ -1425,7 +1472,7 @@ html>body{padding:0}</style>
       if(bounds.max>=900&&bounds.fits)return '向前限制：達到暫設 900 mm 行程上限。';
       const probe=bounds.fits?Math.min(900,bounds.max+10):Number(sz.value);
       const s=spatialState(Number(sx.value)/1000,1.2-probe/1000),reasons=[];
-      for(const [distance,nearest,limit,name]of [[s.rackDistance,s.rackNearest,150,'晾衫架'],[s.acDistance,s.acNearest,300,'側面設備']]){
+      for(const [distance,nearest,limit,name]of [[s.rackDistance,s.rackNearest,150,'晾衫架'],[s.acDistance,s.acNearest,300,'熱水爐排氣管']]){
         if(distance<limit/1000-1e-8)reasons.push(`${nearest.part}至${floorName(nearest.floor)}${name}約 ${Math.round(distance*1000)} mm，少於 ${limit} mm`);
       }
       if(s.clothHit)reasons.push('帆布與障礙物外廓接近／重疊');
@@ -1501,7 +1548,14 @@ html>body{padding:0}</style>
             line([xx,1.19,.41],[xx,1.20,.735],palette.fg,1,.8);
           }
         }
+        drawOffset=0;
+        for(const floor of floorOffsets)for(const side of [0,1]){
+          const p=(y,v)=>sidePoint(side,.012,y+floor,v);
+          shape([p(windowBottom,.30),p(windowTop,.30),p(windowTop,.97),p(windowBottom,.97)],palette.border,palette.fg,1,.55);
+        }
       }
+      drawOffset=0;
+      for(const floor of floorOffsets)for(const side of [0,1])for(const s of sideRackSegments(side,floor))rod(s.a,s.b,palette.fg,s.r);
       // Service pipe: contextual only, not used as an anchor.
       drawOffset=0;
       for(let y=facadeBottom;y<facadeTop;y+=.30)rod([1.5,y,.16],[1.5,Math.min(y+.30,facadeTop),.16],palette.fg,.032);
@@ -1509,13 +1563,12 @@ html>body{padding:0}</style>
       drawOffset=floor;
       for(const y of [.15,1.0,2.5])box(1.445,y,.04,.11,.04,.15,palette.border);
       box(1.445,1.89,.11,.11,.13,.10,palette.fg);
-      // Branches run to both facade corners, along the side walls, then turn into them.
-      rod([1.445,1.055,.16],[1.555,1.055,.16],palette.fg,.038);
+      // Separate gas tee and short upturned branches; no connection to the water network.
+      rod([1.5,1.32,.16],[1.5,1.46,.16],palette.fg,.045);
       for(const {sign,points} of branchPaths()){
         for(let i=1;i<points.length;i++)rod(points[i-1],points[i],palette.fg,.022);
-        const joint=sign<0?.68:2.32;
-        rod([joint-.022,1.055,.16],[joint+.022,1.055,.16],palette.fg,.029);
-        box(joint-.04,1.025,.025,.08,.06,.11,palette.border);
+        const joint=1.5+sign*.16;
+        rod([joint-.022,1.38,.16],[joint+.022,1.38,.16],palette.fg,.029);
       }
       }
       drawOffset=0;
@@ -1523,18 +1576,17 @@ html>body{padding:0}</style>
         const n=Math.ceil(Math.hypot(...b.map((v,i)=>v-a[i]))/.20);
         for(let j=0;j<n;j++)rod(a.map((v,i)=>v+(b[i]-v)*j/n),a.map((v,i)=>v+(b[i]-v)*(j+1)/n),palette.pipe,r);
       }
-      // Air conditioner envelope: inward width is adjustable; height and depth remain illustrative.
+      // Stepped water-heater flue outlets, with the same tier geometry used for clearance.
       const acWidth=Number(ac.value)/1000;
       if(acWidth>0){
-        for(const floor of floorOffsets)for(const ax of [0,3-acWidth]){
-          drawOffset=floor+deviceLift;
-          box(ax,.78,1.05,acWidth,deviceHeight,.52,palette.border);
-          box(ax+.015,.80,1.575,Math.max(.01,acWidth-.03),.44,.012,palette.muted);
-          const radius=Math.min(.16,acWidth*.36),cx=ax+acWidth/2,cy=1.02;
-          const ring=Array.from({length:25},(_,j)=>[cx+Math.cos(j*Math.PI/12)*radius,cy+Math.sin(j*Math.PI/12)*radius,1.592]);
-          shape(ring,null,palette.fg,1,.8);
-          for(let j=-2;j<=2;j++)line([cx-radius*.82,cy+j*radius*.30,1.595],[cx+radius*.82,cy+j*radius*.30,1.595],palette.fg,.8,.7);
-          for(const zz of [1.12,1.49])box(ax,.715,zz,acWidth,.04,.055,palette.fg);
+        for(const floor of floorOffsets)for(const side of [0,1]){
+          drawOffset=0;
+          for(const [i,p]of flueParts(side,floor).entries()){
+            box(...p.min,...p.max.map((v,k)=>v-p.min[k]),shade(palette.border,1-i*.08));
+            const xx=side===0?p.max[0]+.001:p.min[0]-.001;
+            line([xx,p.min[1],p.min[2]],[xx,p.min[1],p.max[2]],palette.fg,.8,.7);
+          }
+          for(const s of sideFlueSegments(side,floor))rod(s.a,s.b,palette.border,s.r);
         }
       }
       // Only dashed site markers stay behind: these are assumed structural locations, not installed anchors.
@@ -1737,8 +1789,8 @@ html>body{padding:0}</style>
       const spatial=spatialState();
       root.querySelector('#g3-readout').textContent=`船身至左牆 ${sx.value} mm · 至前牆 ${1200-Number(sz.value)} mm · 至右牆 ${1400-Number(sx.value)} mm`;
       const distLabel=v=>Number.isFinite(v)?`${Math.round(v*1000)} mm`:'無此障礙物';
-      root.querySelector('#g3-clearance').textContent=`三維最短間距：${spatial.acNearest.part||'船身'}至側面設備 ${distLabel(spatial.acDistance)}（目標 ≥300）· ${spatial.rackNearest.part}至晾衫架 ${distLabel(spatial.rackDistance)}（目標 ≥150）`;
-      root.querySelector('#g3-ac-note').textContent=`牆間暫用 3000 mm · 側面設備各向內佔位 ${ac.value} mm（假設）· 機間淨闊 ${3000-2*Number(ac.value)} mm`;
+      root.querySelector('#g3-clearance').textContent=`三維最短間距：${spatial.acNearest.part||'船身'}至熱水爐排氣管 ${distLabel(spatial.acDistance)}（目標 ≥300）· ${spatial.rackNearest.part}至晾衫架 ${distLabel(spatial.rackDistance)}（目標 ≥150）`;
+      root.querySelector('#g3-ac-note').textContent=`牆間暫用 3000 mm · 熱水爐排氣管各向內佔位 ${ac.value} mm（假設）· 出口間淨闊 ${3000-2*Number(ac.value)} mm`;
       const e=Math.round(clothExtension()*1000),left=bodyLeft-e,right=bodyRight-e,front=bodyFront-e;
       root.querySelector('#g3-cloth-clearance').textContent=`帆布 ${spatial.clothHit?'有外廓重疊':'未見外廓重疊'} · 支架 ${spatial.frameHit?'有外廓重疊':'未見外廓重疊'} · 吊纜 ${spatial.cableHit?'穿入障礙物外廓':'未穿入障礙物外廓'} · 喉管 ${spatial.pipeHit?'外廓有干涉':'外廓無干涉'}（簡化檢查）`;
       const overlap=root.querySelector('#g3-overlap');
@@ -1912,7 +1964,7 @@ function comparisonClearance(s){
   const reasons=[];
   for(const [key,label] of [['clothHit','帆布'],['frameHit','支架'],['cableHit','吊纜'],['gasPipeHit','氣喉'],['waterPipeHit','水管'],['wallHit','牆面'],['selfHit','機構內部']])if(s[key])reasons.push(label);
   if(s.balance&&!s.balance.fits)reasons.push('配重行程');
-  return `船身／人員至晾架 ${distance(s.rackDistance)}（目標 ≥150 mm）· 至側面設備 ${distance(s.acDistance)}（目標 ≥300 mm）。${s.clear?'此位置通過簡化模型條件。':'此位置不符合模型條件。'}${reasons.length?'需檢查：'+reasons.join('、')+'。':''}`;
+  return `船身／人員至晾架 ${distance(s.rackDistance)}（目標 ≥150 mm）· 至熱水爐排氣管 ${distance(s.acDistance)}（目標 ≥300 mm）。${s.clear?'此位置通過簡化模型條件。':'此位置不符合模型條件。'}${reasons.length?'需檢查：'+reasons.join('、')+'。':''}`;
 }
 function initComparisonUI(adapter){
   const q=s=>root.querySelector(s),controls=['height','x','z'].map(n=>q('#ui-'+n));

@@ -1083,7 +1083,7 @@ html>body{padding:0}</style>
   <label class="form-label">支架收起程序 <output id="g3-mech-percent">0</output>%<input id="g3-mech" class="form-range" type="range" min="0" max="100" step="1" value="0" aria-label="支架收起程序，0為展開扣接，100為收妥"></label>
   <button class="btn" id="g3-mech-play" type="button">播放收起支架</button>
 </div><div id="g3-mech-status" class="text-small"></div></details>
-  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">左右各有獨立防墮扣及提升機／馬達的實體外殼，兩條中性色鋼絲繩分別穿過兩個裝置並由下方伸出。綠、紫色用於識別裝置。</div><div class="text-small">中央氣喉接左右短分支，再向上轉彎。白色斜分支各自接左／右水管，靠中央的一端彎向上，與中央水管及氣喉分開。三條水管保留；圖中未顯示的末端接駁暫不推定。水管直徑暫用 130 mm、分支 70 mm，離牆中心距 280 mm；位置、坡度及裝置外廓未實測。左右側牆設窗戶及彎喉，不設晾衫架；下方白色橫喉接各自外側水管。熱水爐排氣管出口採兩級階梯外廓，頂部與窗頂對齊，下接彎喉。階梯尺寸及未顯示接駁為示意，須實測核對。橙色帆布只在靠牆及左右三面，街外面開放。</div><div class="text-small">外牆扣接位置為假設，升降前收妥支架，到達目標高度後重新展開。每個工作高度的可靠支點、扣接承載及拆裝方式仍需工程設計。</div></details>
+  <details id="ui-scheme-notes"><summary>方案說明與限制</summary><div class="text-small">左右各有獨立防墮扣及提升機／馬達的實體外殼，兩條中性色鋼絲繩分別穿過兩個裝置並由下方伸出。綠、紫色用於識別裝置。</div><div class="text-small">中央氣喉接左右短分支，再向上轉彎。白色斜分支各自接左／右水管，靠中央的一端上彎後再轉入正面牆身，與中央水管及氣喉分開。三條水管保留；牆內走線不作推定。水管直徑暫用 130 mm、分支 70 mm，離牆中心距 280 mm；位置、坡度及裝置外廓未實測。左右側牆設窗戶及彎喉，不設晾衫架；下方白色橫喉接各自外側水管，末端上彎後轉入各自側牆。熱水爐排氣管出口採兩級階梯外廓，頂部與窗頂對齊，下接彎喉。階梯尺寸及未顯示接駁為示意，須實測核對。橙色帆布只在靠牆及左右三面，街外面開放。</div><div class="text-small">外牆扣接位置為假設，升降前收妥支架，到達目標高度後重新展開。每個工作高度的可靠支點、扣接承載及拆裝方式仍需工程設計。</div></details>
   <div class="text-small">幾何及尺寸為示意假設，未驗證結構、抗風及載人施工安全。</div>
   <div hidden><input id="g3-x" type="range" min="300" max="1100" step="any" value="700"><input id="g3-z" type="range" min="0" max="900" step="any" value="0">
 <input id="g3-height-slider" type="range" min="-3000" max="3000" step="10" value="0">
@@ -1248,11 +1248,20 @@ html>body{padding:0}</style>
       points.push(p(1.20,1.76));
       return points.slice(1).map((b,i)=>({a:points[i],b,r:.022}));
     }
+    function turnWaterIntoWall(points,axis,direction,wallCoordinate,r){
+      const start=points.at(-1);
+      for(let j=1;j<=12;j++){
+        const t=j*Math.PI/24,p=[...start];
+        p[1]+=r*Math.sin(t);p[axis]+=direction*r*(1-Math.cos(t));points.push(p);
+      }
+      const end=[...points.at(-1)];end[axis]=wallCoordinate+direction*.04;points.push(end);
+    }
     function sideWaterSegments(){
       return floorOffsets.flatMap(floor=>[0,1].flatMap(side=>{
         const p=(y,v)=>sidePoint(side,.12,y+floor,v),points=[p(.82,.28),p(.82,1.70)];
         for(let j=1;j<=10;j++){const t=j*Math.PI/20;points.push(p(.88-.06*Math.cos(t),1.70+.06*Math.sin(t)));}
         points.push(p(.98,1.76));
+        turnWaterIntoWall(points,0,side===0?-1:1,side===0?0:3,.06);
         return points.slice(1).map((b,i)=>({a:points[i],b,r:.025}));
       }));
     }
@@ -1383,7 +1392,8 @@ html>body{padding:0}</style>
           points.push([centre[0]+inward*r*Math.sin(angle),centre[1]-r*Math.cos(angle),.28]);
         }
         const tip=points.at(-1);points.push([tip[0],1.22+h,.28]);
-        // Reference shows an upturned end. Its concealed continuation is unknown.
+        // Turn the terminal rise through a second elbow into the front wall (z=0).
+        turnWaterIntoWall(points,2,-1,0,.075);
         return {side,floor:h,points,r:.035};
       }));
     }

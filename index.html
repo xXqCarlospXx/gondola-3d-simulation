@@ -1371,25 +1371,10 @@ html>body{padding:0}</style>
     }
     function upperFrontGasPaths(){
       return floorOffsets.flatMap(floor=>[-1,1].map(side=>{
-        const wallSide=side<0?0:1,inward=-side,p=(u,y,z)=>sidePoint(wallSide,u,y+floor,z),r=.06;
-        // Route around the outside of the corner riser, continuing from front to side wall.
-        const tail=[p(.10,.72,.56),p(.10,.72,1.85)];
-        for(let j=1;j<=12;j++){
-          const t=j*Math.PI/24;tail.push(p(.10,.78-r*Math.cos(t),1.85+r*Math.sin(t)));
-        }
-        tail.push(p(.10,1.12,1.91));
-        turnWaterIntoWall(tail,0,side,wallSide===0?0:3,r);
-        const points=tail.reverse();
-        for(let j=1;j<=12;j++){
-          const t=j*Math.PI/24;points.push(p(.10+.14*(1-Math.cos(t)),.72,.56-.14*Math.sin(t)));
-        }
-        const inner=side<0?1.10:1.90,bend=inner-inward*r,y=.72+floor;
-        points.push([bend,y,.42]);
-        for(let j=1;j<=12;j++){
-          const t=j*Math.PI/24;points.push([bend+inward*r*Math.sin(t),y+r*(1-Math.cos(t)),.42]);
-        }
-        // Continue horizontally toward the front wall at the same height; no downward turn.
-        points.push([inner,y,.42],[inner,y,-.04]);
+        const wallSide=side<0?0:1,wallX=side<0?-.04:3.04,p=(u,y,z)=>sidePoint(wallSide,u,y+floor,z),y=.72+floor;
+        // Orthogonal route: every segment changes exactly one coordinate.
+        const inner=side<0?1.10:1.90;
+        const points=[[wallX,y,.56],p(.10,.72,.56),p(.10,.72,1.85),p(.10,.72,.42),[inner,y,.42],[inner,y,-.04]];
         return {side,floor,points,r:.022};
       }));
     }
@@ -1588,7 +1573,6 @@ html>body{padding:0}</style>
       for(let y=facadeBottom;y<facadeTop;y+=.30)rod([1.5,y,.16],[1.5,Math.min(y+.30,facadeTop),.16],palette.fg,.032);
       for(const floor of floorOffsets){
       drawOffset=floor;
-      for(const y of [.15,1.0,2.5])box(1.445,y,.04,.11,.04,.15,palette.border);
       box(1.445,1.89,.11,.11,.13,.10,palette.fg);
       // Separate gas tee and short upturned branches; no connection to the water network.
       rod([1.5,.22,.16],[1.5,.36,.16],palette.fg,.045);

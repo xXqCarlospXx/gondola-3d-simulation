@@ -1371,10 +1371,24 @@ html>body{padding:0}</style>
     }
     function upperFrontGasPaths(){
       return floorOffsets.flatMap(floor=>[-1,1].map(side=>{
-        const wallSide=side<0?0:1,wallX=side<0?-.04:3.04,p=(u,y,z)=>sidePoint(wallSide,u,y+floor,z),y=.72+floor;
-        // Orthogonal route: every segment changes exactly one coordinate.
-        const inner=side<0?1.10:1.90;
-        const points=[[wallX,y,.56],p(.10,.72,.56),p(.10,.72,1.85),p(.10,.72,.42),[inner,y,.42],[inner,y,-.04]];
+        const wallSide=side<0?0:1,inward=-side,p=(u,y,z)=>sidePoint(wallSide,u,y+floor,z),r=.06;
+        // Existing routed geometry retained; the square turn fitting is removed separately.
+        const tail=[p(.10,.72,.56),p(.10,.72,1.85)];
+        for(let j=1;j<=12;j++){
+          const t=j*Math.PI/24;tail.push(p(.10,.78-r*Math.cos(t),1.85+r*Math.sin(t)));
+        }
+        tail.push(p(.10,1.12,1.91));
+        turnWaterIntoWall(tail,0,side,wallSide===0?0:3,r);
+        const points=tail.reverse();
+        for(let j=1;j<=12;j++){
+          const t=j*Math.PI/24;points.push(p(.10+.14*(1-Math.cos(t)),.72,.56-.14*Math.sin(t)));
+        }
+        const inner=side<0?1.10:1.90,bend=inner-inward*r,y=.72+floor;
+        points.push([bend,y,.42]);
+        for(let j=1;j<=12;j++){
+          const t=j*Math.PI/24;points.push([bend+inward*r*Math.sin(t),y+r*(1-Math.cos(t)),.42]);
+        }
+        points.push([inner,y,.42],[inner,y,-.04]);
         return {side,floor,points,r:.022};
       }));
     }

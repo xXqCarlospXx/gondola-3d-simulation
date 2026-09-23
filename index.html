@@ -1373,23 +1373,23 @@ html>body{padding:0}</style>
       return floorOffsets.flatMap(floor=>[-1,1].map(side=>{
         const wallSide=side<0?0:1,inward=-side,p=(u,y,z)=>sidePoint(wallSide,u,y+floor,z),r=.06;
         // Route around the outside of the corner riser, continuing from front to side wall.
-        const tail=[p(.22,.72,.56),p(.22,.72,1.85)];
+        const tail=[p(.10,.72,.56),p(.10,.72,1.85)];
         for(let j=1;j<=12;j++){
-          const t=j*Math.PI/24;tail.push(p(.22,.78-r*Math.cos(t),1.85+r*Math.sin(t)));
+          const t=j*Math.PI/24;tail.push(p(.10,.78-r*Math.cos(t),1.85+r*Math.sin(t)));
         }
-        tail.push(p(.22,1.12,1.91));
+        tail.push(p(.10,1.12,1.91));
         turnWaterIntoWall(tail,0,side,wallSide===0?0:3,r);
         const points=tail.reverse();
         for(let j=1;j<=12;j++){
-          const t=j*Math.PI/24;points.push(p(.22+.14*(1-Math.cos(t)),.72,.56-.14*Math.sin(t)));
+          const t=j*Math.PI/24;points.push(p(.10+.14*(1-Math.cos(t)),.72,.56-.14*Math.sin(t)));
         }
         const inner=side<0?1.10:1.90,bend=inner-inward*r,y=.72+floor;
         points.push([bend,y,.42]);
         for(let j=1;j<=12;j++){
           const t=j*Math.PI/24;points.push([bend+inward*r*Math.sin(t),y+r*(1-Math.cos(t)),.42]);
         }
-        points.push([inner,.80+floor,.42]);
-        turnWaterIntoWall(points,2,-1,0,.04);
+        // Continue horizontally toward the front wall at the same height; no downward turn.
+        points.push([inner,y,.42],[inner,y,-.04]);
         return {side,floor,points,r:.022};
       }));
     }
@@ -1451,8 +1451,8 @@ html>body{padding:0}</style>
     }
     function suspensionWires(x,z,h){
       return [[.85,x+.15],[2.15,x+1.45]].flatMap(([ax,bx])=>[
-        {kind:'safety',points:[[ax,anchorHeight,1.575],[bx,1.83+h,z+.27],[bx,1.61+h,z+.27],[bx,.08+h,z+.27]]},
-        {kind:'motor',points:[[ax+.045,anchorHeight,1.575],[bx+.035,1.24+h,z+.49],[bx+.035,.88+h,z+.49],[bx+.035,.08+h,z+.49]]}
+        {kind:'safety',points:[[ax,anchorHeight,1.575],[bx,1.83+h,z+.27],[bx,1.61+h,z+.27],[bx,.52+h,z+.27]]},
+        {kind:'motor',points:[[ax+.045,anchorHeight,1.575],[bx+.035,1.24+h,z+.49],[bx+.035,.88+h,z+.49],[bx+.035,.52+h,z+.49]]}
       ]);
     }
     function segmentHits(a,b,box,pad=.015){
@@ -1661,6 +1661,11 @@ html>body{padding:0}</style>
         const inward=zz===front?1:-1;
         rod([1.68,.267,zz+inward*(.14-.09*m.pin)],[1.68,.267,zz+inward*(.08-.09*m.pin)],palette.fg,.012);
       }
+      // Wires are drawn first so the opaque gondola body hides the portions inside it.
+      for(const {points} of suspensionWires(x,z,verticalOffset))for(let i=1;i<points.length;i++){
+        const a=points[i-1],b=points[i],n=Math.ceil(Math.hypot(...b.map((v,k)=>v-a[k]))/.20);
+        for(let j=0;j<n;j++)line(a.map((v,k)=>v+(b[k]-v)*j/n),a.map((v,k)=>v+(b[k]-v)*(j+1)/n),palette.fg,1.5);
+      }
       // Suspended basket. Width is 1600 mm; depth/height are illustrative.
       box(x,.445,z,1.6,.085,.75,palette.boat);
       box(x,.53,z,1.6,.17,.025,palette.boat);
@@ -1695,11 +1700,6 @@ html>body{padding:0}</style>
         box(ax-.11,anchorHeight+.02,1.495,.22,.055,.16,palette.fg);
         sphere([ax,anchorHeight,1.575],.025,palette.fg);
         sphere([ax+.045,anchorHeight,1.575],.018,palette.fg);
-      }
-      // Neutral steel wires pass through the distinct lock/hoist bodies and emerge below.
-      for(const {points} of suspensionWires(x,z,verticalOffset))for(let i=1;i<points.length;i++){
-        const a=points[i-1],b=points[i],n=Math.ceil(Math.hypot(...b.map((v,k)=>v-a[k]))/.20);
-        for(let j=0;j<n;j++)line(a.map((v,k)=>v+(b[k]-v)*j/n),a.map((v,k)=>v+(b[k]-v)*(j+1)/n),palette.fg,1.5);
       }
       // Both occupancy states stay inside the guardrails and move with the basket.
       drawOffset=verticalOffset;

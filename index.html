@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; style-src 'unsafe-inline' blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; img-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; media-src blob: data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://esm.sh https://fonts.bunny.net https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; worker-src blob:; connect-src blob: data:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
 <title>吊船 3D 模型 — 外牆扣接架</title>
 <style>:root {
-  color-scheme: light dark;
+  color-scheme: light;
   background-color: var(
     --background,
     var(--color-background-primary, light-dark(rgb(255 255 255), rgb(24 24 24)))
@@ -1142,7 +1142,9 @@ html>body{padding:0}</style>
     const distanceToggle=root.querySelector('#g3-distance-toggle');
     const themeToggle=root.querySelector('#g3-theme-toggle');
     const systemTheme=window.matchMedia('(prefers-color-scheme: dark)');
-    let chosenTheme=null;
+    // Start in light mode regardless of the operating system preference. A
+    // manual toggle still takes ownership of the theme for this page.
+    let chosenTheme=false;
     function applyTheme(dark){
       const theme=dark?'dark':'light';
       root.dataset.g3Theme=theme;root.style.colorScheme=theme;
@@ -1587,7 +1589,6 @@ html>body{padding:0}</style>
       for(let y=facadeBottom;y<facadeTop;y+=.30)rod([1.5,y,.16],[1.5,Math.min(y+.30,facadeTop),.16],palette.fg,.032);
       for(const floor of floorOffsets){
       drawOffset=floor;
-      box(1.445,1.89,.11,.11,.13,.10,palette.fg);
       // Separate gas tee and short upturned branches; no connection to the water network.
       rod([1.5,.22,.16],[1.5,.36,.16],palette.fg,.045);
       for(const {sign,points} of branchPaths()){
@@ -2086,7 +2087,7 @@ comparisonRefresh=initComparisonUI({
 });
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&comparisonMotion){comparisonMotion.paused=true;cancelAnimationFrame(comparisonRaf);update();}});
 
-    applyTheme(systemTheme.matches);
+    applyTheme(false);
     resize();update();
   })();
   

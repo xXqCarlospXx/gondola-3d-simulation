@@ -1661,11 +1661,14 @@ html>body{padding:0}</style>
         rod([1.68,.267,zz+inward*(.14-.09*m.pin)],[1.68,.267,zz+inward*(.08-.09*m.pin)],palette.fg,.012);
       }
       // Wires are drawn first so the opaque gondola body hides the portions inside it.
+      // Wire points already use world coordinates, including the moving height.
+      drawOffset=0;
       for(const {points} of suspensionWires(x,z,verticalOffset))for(let i=1;i<points.length;i++){
         const a=points[i-1],b=points[i],n=Math.ceil(Math.hypot(...b.map((v,k)=>v-a[k]))/.20);
         for(let j=0;j<n;j++)line(a.map((v,k)=>v+(b[k]-v)*j/n),a.map((v,k)=>v+(b[k]-v)*(j+1)/n),palette.fg,1.5);
       }
       // Suspended basket. Width is 1600 mm; depth/height are illustrative.
+      drawOffset=verticalOffset;
       box(x,.445,z,1.6,.085,.75,palette.boat);
       box(x,.53,z,1.6,.17,.025,palette.boat);
       box(x,.53,z+.725,1.6,.17,.025,palette.boat);

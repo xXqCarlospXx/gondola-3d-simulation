@@ -1374,7 +1374,7 @@ html>body{padding:0}</style>
     function upperFrontGasPaths(){
       return floorOffsets.flatMap(floor=>[-1,1].map(side=>{
         const wallSide=side<0?0:1,inward=-side,p=(u,y,z)=>sidePoint(wallSide,u,y+floor,z),r=.06;
-        // Existing routed geometry retained; the square turn fitting is removed separately.
+        // Retain the outer routing; align the inner wall entry with the lower branch.
         const tail=[p(.10,.72,.56),p(.10,.72,1.85)];
         for(let j=1;j<=12;j++){
           const t=j*Math.PI/24;tail.push(p(.10,.78-r*Math.cos(t),1.85+r*Math.sin(t)));
@@ -1385,12 +1385,12 @@ html>body{padding:0}</style>
         for(let j=1;j<=12;j++){
           const t=j*Math.PI/24;points.push(p(.10+.14*(1-Math.cos(t)),.72,.56-.14*Math.sin(t)));
         }
-        const inner=side<0?1.10:1.90,bend=inner-inward*r,y=.72+floor;
+        const inner=1.5+side*.34,bend=inner-inward*r,y=.72+floor;
         points.push([bend,y,.42]);
         for(let j=1;j<=12;j++){
-          const t=j*Math.PI/24;points.push([bend+inward*r*Math.sin(t),y+r*(1-Math.cos(t)),.42]);
+          const t=j*Math.PI/24;points.push([bend+inward*r*Math.sin(t),y,.42-r*(1-Math.cos(t))]);
         }
-        points.push([inner,y,.42],[inner,y,-.04]);
+        points.push([inner,y,-.04]);
         return {side,floor,points,r:.022};
       }));
     }
